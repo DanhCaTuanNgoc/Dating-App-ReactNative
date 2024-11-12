@@ -1,0 +1,16 @@
+{
+   "editor.formatOnSave": true,
+   "editor.defaultFormatter": "esbenp.prettier-vscode",
+   // viet tag HTML trong file js
+   "emmet.includeLanguages": {
+      "javascript": "javascriptreact"
+   },
+   "git.ignoreLimitWarning": true
+   // "C_Cpp.intelliSenseEngineFallback": "enabled",
+   // "workbench.colorTheme": "Electron",
+   // "workbench.preferredDarkColorTheme": "Electron",
+   // "workbench.preferredHighContrastColorTheme": "Electron",
+   // "workbench.preferredHighContrastLightColorTheme": "Electron",
+   // "workbench.preferredLightColorTheme": "Electron",
+   // "workbench.iconTheme": "material-icon-theme"
+}
