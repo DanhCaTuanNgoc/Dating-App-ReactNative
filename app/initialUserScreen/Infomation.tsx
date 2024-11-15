@@ -3,11 +3,15 @@ import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { useDispatch, useSelector } from 'react-redux'
+import { initialUserInfo } from '../../store/user/userAction'
 
 function Infomation({ navigation }: { navigation: any }) {
    const [name, setName] = useState('')
    const [birthDate, setBirthDate] = useState(new Date())
    const [gender, setGender] = useState('')
+   const dispatch: any = useDispatch()
+   const { userId } = useSelector((state: any) => state.userState)
 
    const handleDateChange = (event: any, selectedDate?: Date) => {
       if (selectedDate) {
@@ -15,9 +19,14 @@ function Infomation({ navigation }: { navigation: any }) {
       }
    }
 
-   const handleContinue = () => {
-      if (name.trim() == '' && gender.trim() == '' && birthDate.toString().trim() == '') {
-         navigation.navigate('Home')
+   const handleContinue = async () => {
+      if (
+         name.trim() !== '' &&
+         gender.trim() !== '' &&
+         birthDate.toString().trim() !== ''
+      ) {
+         await dispatch(initialUserInfo(userId, name, gender, birthDate))
+         navigation.navigate('Interests')
       } else {
          Alert.alert('Please fill in all the fields')
       }
@@ -33,6 +42,7 @@ function Infomation({ navigation }: { navigation: any }) {
 
    return (
       <SafeAreaView style={styles.container}>
+
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#333" />
          </TouchableOpacity>

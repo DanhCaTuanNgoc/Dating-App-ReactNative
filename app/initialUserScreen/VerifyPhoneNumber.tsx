@@ -11,7 +11,7 @@ import { getReactNativePersistence } from '@firebase/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { addPhoneNumber } from '../../store/user/userAction'
+import { authPhoneNumber } from '../../store/user/userAction'
 import { useDispatch } from 'react-redux'
 
 function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any }) {
@@ -36,7 +36,7 @@ function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any 
    }
 
    const confirmCode = async () => {
-      const data = await addPhoneNumber(phoneNumber)(dispatch)
+      const data = await authPhoneNumber(phoneNumber)(dispatch)
       if (data) {
          // cap nhat uid vao redux
          navigation.navigate('Infomation')
