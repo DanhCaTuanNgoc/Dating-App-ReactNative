@@ -1,51 +1,52 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { initialUserInterests } from '../../store/user/userAction'
+import { COLORS } from '../../constants/theme'
 
 function Interests({ navigation }: { navigation: any }) {
    const [selectedInterests, setSelectedInterests] = useState<object[]>([])
+   const [showAlert, setShowAlert] = useState(false)
    const dispatch: any = useDispatch()
    const { userId } = useSelector((state: any) => state.userState)
 
    const interests: object[] = [
-      { name: "Travel", id: 1 },
-      { name: "Music", id: 2 },
-      { name: "Movies", id: 3 },
-      { name: "Sports", id: 4 },
-      { name: "Food", id: 5 },
-      { name: "Art", id: 6 },
-      { name: "Reading", id: 7 },
-      { name: "Gaming", id: 8 },
-      { name: "Fitness", id: 9 },
-      { name: "Photography", id: 10 },
-      { name: "Dancing", id: 11 },
-      { name: "Cooking", id: 12 },
-      { name: "Nature", id: 13 },
-      { name: "Technology", id: 14 },
-      { name: "Pets", id: 15 }
+      { name: 'Travel', id: 1, icon: 'airplane' },
+      { name: 'Music', id: 2, icon: 'musical-notes' },
+      { name: 'Movies', id: 3, icon: 'film' },
+      { name: 'Sports', id: 4, icon: 'basketball' },
+      { name: 'Food', id: 5, icon: 'restaurant' },
+      { name: 'Art', id: 6, icon: 'color-palette' },
+      { name: 'Reading', id: 7, icon: 'book' },
+      { name: 'Gaming', id: 8, icon: 'game-controller' },
+      { name: 'Fitness', id: 9, icon: 'fitness' },
+      { name: 'Photography', id: 10, icon: 'camera' },
+      { name: 'Dancing', id: 11, icon: 'musical-note' },
+      { name: 'Cooking', id: 12, icon: 'restaurant-outline' },
+      { name: 'Nature', id: 13, icon: 'leaf' },
+      { name: 'Technology', id: 14, icon: 'laptop' },
+      { name: 'Pets', id: 15, icon: 'paw' },
    ]
 
    const toggleInterest = (interest: object) => {
-      if (selectedInterests.find((item: any) => item.id === (interest as any).id)) {
-         setSelectedInterests(selectedInterests.filter((item: any) => item.id !== (interest as any).id))
+      if (!selectedInterests.find((item) => (item as any).id === (interest as any).id)) {
+         setSelectedInterests([...selectedInterests, interest])
       } else {
-         if (selectedInterests.length < 5) {
-            setSelectedInterests([...selectedInterests, interest])
-         } else {
-            Alert.alert('Maximum 5 interests allowed')
-         }
+         setSelectedInterests(
+            selectedInterests.filter((item) => (item as any).id !== (interest as any).id),
+         )
       }
    }
 
    const handleContinue = async () => {
       if (selectedInterests.length > 0) {
+         console.log(selectedInterests, userId)
          await dispatch(initialUserInterests(userId, selectedInterests))
-         navigation.navigate('Home')
+         navigation.navigate('Pictures')
       } else {
-         Alert.alert('Please select at least one interest')
+         setShowAlert(true)
       }
    }
 
@@ -57,24 +58,45 @@ function Interests({ navigation }: { navigation: any }) {
 
          <View style={styles.header}>
             <Text style={styles.headerTitle}>Select Your Interests</Text>
-            <Text style={styles.headerSubtitle}>Choose up to 5 interests that match you</Text>
+            <Text style={styles.headerSubtitle}>Choose any interests that match you</Text>
          </View>
 
-         <ScrollView style={styles.interestsContainer}>
+         <ScrollView
+            style={styles.interestsContainer}
+            showsVerticalScrollIndicator={false}
+         >
             <View style={styles.interestsGrid}>
                {interests.map((interest: any) => (
                   <TouchableOpacity
                      key={interest.id}
                      style={[
                         styles.interestItem,
-                        selectedInterests.find(item => (item as any).id === interest.id) && styles.selectedInterest
+                        selectedInterests.find(
+                           (item) => (item as any).id === interest.id,
+                        ) && styles.selectedInterest,
                      ]}
                      onPress={() => toggleInterest(interest)}
                   >
-                     <Text style={[
-                        styles.interestText,
-                        selectedInterests.find(item => (item as any).id === interest.id) && styles.selectedInterestText
-                     ]}>
+                     <Ionicons
+                        name={interest.icon}
+                        size={20}
+                        color={
+                           selectedInterests.find(
+                              (item) => (item as any).id === interest.id,
+                           )
+                              ? COLORS.textColor
+                              : '#666'
+                        }
+                        style={styles.interestIcon}
+                     />
+                     <Text
+                        style={[
+                           styles.interestText,
+                           selectedInterests.find(
+                              (item) => (item as any).id === interest.id,
+                           ) && styles.selectedInterestText,
+                        ]}
+                     >
                         {interest.name}
                      </Text>
                   </TouchableOpacity>
@@ -82,12 +104,11 @@ function Interests({ navigation }: { navigation: any }) {
             </View>
          </ScrollView>
 
-         <TouchableOpacity 
-            style={[styles.continueButton, selectedInterests.length === 0 && styles.disabledButton]} 
-            onPress={handleContinue}
-            disabled={selectedInterests.length === 0}
-         >
+         <TouchableOpacity style={[styles.continueButton]} onPress={handleContinue}>
             <Text style={styles.continueButtonText}>Continue</Text>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Pictures')}>
+            <Text>Skip</Text>
          </TouchableOpacity>
       </SafeAreaView>
    )
@@ -96,32 +117,41 @@ function Interests({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: '#FFFAF0',
+      backgroundColor: COLORS.backgroundContent,
       padding: 20,
    },
    backButton: {
-      position: 'absolute',
-      top: 50,
-      left: 20,
-      zIndex: 1,
+      marginBottom: 20,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: COLORS.backgroundButton,
    },
    header: {
-      marginTop: 60,
-      marginBottom: 30,
+      marginTop: 0,
+      marginBottom: 10,
    },
    headerTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#FFA07A',
-      marginBottom: 10,
+      fontSize: 28,
+      fontWeight: '700',
+      marginBottom: 8,
+      color: COLORS.textColor,
    },
    headerSubtitle: {
       fontSize: 16,
-      color: '#FFB6C1',
+      color: '#666',
+      marginBottom: 10,
+   },
+   selectedCount: {
+      fontSize: 14,
+      color: '#333',
+      fontWeight: '600',
    },
    interestsContainer: {
       flex: 1,
-      marginBottom: 20,
+      marginBottom: 10,
    },
    interestsGrid: {
       flexDirection: 'row',
@@ -130,39 +160,60 @@ const styles = StyleSheet.create({
       paddingVertical: 10,
    },
    interestItem: {
-      width: '48%',
-      padding: 15,
-      borderRadius: 10,
+      width: '31%',
+      padding: 12,
+      borderRadius: 12,
       borderWidth: 1,
-      borderColor: '#FFE4B5',
-      marginBottom: 15,
+      borderColor: '#eee',
+      marginBottom: 12,
       alignItems: 'center',
-      backgroundColor: '#FFF5EE',
+      backgroundColor: COLORS.white,
+      elevation: 1,
+      shadowColor: '#000',
+      shadowOffset: {
+         width: 0,
+         height: 1,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
    },
    selectedInterest: {
-      backgroundColor: '#FFA07A',
-      borderColor: '#FFA07A',
+      backgroundColor: '#f5f5f5',
+      borderColor: COLORS.textColor,
+   },
+   interestIcon: {
+      marginBottom: 6,
    },
    interestText: {
-      fontSize: 16,
-      color: '#FFA07A',
+      fontSize: 12,
+      color: '#666',
+      fontWeight: '500',
    },
    selectedInterestText: {
-      color: '#fff',
+      color: '#333',
+      fontWeight: '600',
    },
    continueButton: {
-      backgroundColor: '#FFA07A',
-      padding: 15,
-      borderRadius: 10,
+      backgroundColor: COLORS.backgroundButton,
+      padding: 16,
+      borderRadius: 12,
       alignItems: 'center',
-      marginBottom: 20,
+      marginBottom: 30,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: {
+         width: 0,
+         height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
    },
    disabledButton: {
-      backgroundColor: '#FFE4E1',
+      backgroundColor: '#eee',
    },
    continueButtonText: {
-      color: '#fff',
-      fontSize: 18,
+      color: '#333',
+      fontSize: 16,
       fontWeight: 'bold',
    },
 })

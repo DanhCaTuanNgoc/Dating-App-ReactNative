@@ -1,4 +1,4 @@
-import express from 'express'
+const express = require('express')
 const router = express.Router()
 const pool = require('../config/database')
 
@@ -75,7 +75,7 @@ router.post('/initial', async (req, res) => {
       if (!userId || !name || !gender || !birthDate) {
          return res.status(400).json({ error: 'All fields are required' })
       }
-      
+
       const insertQuery = `
          UPDATE users 
          SET name = $1, gender = $2, birth_date = $3 
@@ -86,7 +86,7 @@ router.post('/initial', async (req, res) => {
 
       res.status(200).json({
          success: true,
-         user: result.rows[0]
+         user: result.rows[0],
       })
    } catch (error) {
       console.error('Error in user info:', error)

@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { authPhoneNumber } from '../../store/user/userAction'
 import { useDispatch } from 'react-redux'
-
+import { setUserId } from '../../store/user/userReducer'
 function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any }) {
    const { verificationId, verificationCode: initialCode, phoneNumber } = route.params
    const [verificationCode, setVerificationCode] = useState(initialCode || '')
@@ -21,7 +21,7 @@ function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any 
    const dispatch = useDispatch()
 
    let auth: any
-   const firebaseConfig = require('../../backend/firebase-config')
+   const firebaseConfig = require('../../backend/config/firebase-config')
    try {
       const app = initializeApp(firebaseConfig)
       auth = initializeAuth(app, {
@@ -35,63 +35,53 @@ function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any 
       }
    }
 
+   // Xác nhận mã OTP
    const confirmCode = async () => {
-      const data = await authPhoneNumber(phoneNumber)(dispatch)
-      if (data) {
-         // cap nhat uid vao redux
-         navigation.navigate('Infomation')
-      }
-      // } else {
-      //    //cap nhat uid vao redux
-      //    navigation.navigate('Home')
+      // try {
+      //    if (!verificationId || !verificationCode) {
+      //       Alert.alert('Error', 'Please enter verification code')
+      //       return
+      //    }
+
+      //    // Hiển thị loading state nếu cần
+      //    setIsLoading(true)
+
+      //    const credential = PhoneAuthProvider.credential(verificationId, verificationCode)
+
+      //    // Thêm timeout cho signInWithCredential
+      //    const signInPromise = signInWithCredential(auth, credential)
+      //    const timeoutPromise = new Promise((_, reject) =>
+      //       setTimeout(() => reject(new Error('Timeout')), 30000),
+      //    )
+
+      //    const result = await Promise.race([signInPromise, timeoutPromise])
+
+      //    const data = await authPhoneNumber(phoneNumber)(dispatch)
+      //    if (data.isNewUser) {
+      //       navigation.navigate('Infomation')
+      //    } else {
+      //       navigation.navigate('Home')
+      //    }
+      // } catch (error: any) {
+      //    console.error('Verification error:', error)
+
+      //    // Xử lý các loại lỗi cụ thể
+      //    let errorMessage = 'Verification failed. Please try again.'
+      //    if (error.message === 'Timeout') {
+      //       errorMessage = 'Connection timed out. Please check your internet connection.'
+      //    } else if (error.code === 'auth/invalid-verification-code') {
+      //       errorMessage = 'Invalid verification code. Please try again.'
+      //    } else if (error.code === 'auth/network-request-failed') {
+      //       errorMessage = 'Network error. Please check your internet connection.'
+      //    }
+
+      //    Alert.alert('Error', errorMessage)
+      // } finally {
+      //    setIsLoading(false) // Tắt loading state
       // }
+      dispatch(setUserId('4'))
+      navigation.navigate('Infomation')
    }
-
-   // // Xác nhận mã OTP
-   // const confirmCode = async () => {
-   //    try {
-   //       if (!verificationId || !verificationCode) {
-   //          Alert.alert('Error', 'Please enter verification code')
-   //          return
-   //       }
-
-   //       // Hiển thị loading state nếu cần
-   //       setIsLoading(true)
-
-   //       const credential = PhoneAuthProvider.credential(
-   //          verificationId,
-   //          verificationCode
-   //       )
-
-   //       // Thêm timeout cho signInWithCredential
-   //       const signInPromise = signInWithCredential(auth, credential)
-   //       const timeoutPromise = new Promise((_, reject) =>
-   //          setTimeout(() => reject(new Error('Timeout')), 30000)
-   //       )
-
-   //       const result = await Promise.race([signInPromise, timeoutPromise])
-
-   //      //  await addPhoneNumber(phoneNumber)
-   //       navigation.navigate('Name_BirthDate')
-
-   //    } catch (error: any) {
-   //       console.error('Verification error:', error)
-
-   //       // Xử lý các loại lỗi cụ thể
-   //       let errorMessage = 'Verification failed. Please try again.'
-   //       if (error.message === 'Timeout') {
-   //          errorMessage = 'Connection timed out. Please check your internet connection.'
-   //       } else if (error.code === 'auth/invalid-verification-code') {
-   //          errorMessage = 'Invalid verification code. Please try again.'
-   //       } else if (error.code === 'auth/network-request-failed') {
-   //          errorMessage = 'Network error. Please check your internet connection.'
-   //       }
-
-   //       Alert.alert('Error', errorMessage)
-   //    } finally {
-   //       setIsLoading(false) // Tắt loading state
-   //    }
-   // }
 
    return (
       <SafeAreaView style={styles.container}>
@@ -133,7 +123,7 @@ function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any 
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: '#ffffff',
+      backgroundColor: '#FFFAF0',
       paddingHorizontal: 24,
       paddingVertical: 20,
    },
@@ -144,7 +134,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: '#FFC629',
    },
    backButtonText: {
       fontSize: 18,
@@ -175,6 +165,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 15,
       fontSize: 18,
       marginBottom: 20,
+      backgroundColor: '#f8f8f8',
    },
    verifyButton: {
       width: '100%',
@@ -186,7 +177,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
    },
    verifyButtonText: {
-      color: '#000',
+      color: '#333',
       fontSize: 18,
       fontWeight: '600',
    },
@@ -195,13 +186,14 @@ const styles = StyleSheet.create({
       marginTop: 0,
    },
    resendText: {
-      color: '#666',
+      color: '#333',
       fontSize: 16,
    },
    resendLink: {
       color: '#FFC629',
       fontSize: 16,
       fontWeight: '600',
+      textDecorationLine: 'underline',
    },
 })
 

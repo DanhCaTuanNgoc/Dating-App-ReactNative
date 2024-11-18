@@ -22,6 +22,7 @@ import { getReactNativePersistence } from '@firebase/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { COLORS } from '../../constants'
 
 LogBox.ignoreLogs([
    'Failed to initialize reCAPTCHA Enterprise config. Triggering the reCAPTCHA v2 verification.',
@@ -38,7 +39,7 @@ function PhoneLogin({ navigation }: { navigation: any }) {
    const recaptchaVerifier = useRef(null)
 
    let auth: any
-   const firebaseConfig = require('../../backend/firebase-config')
+   const firebaseConfig = require('../../backend/config/firebase-config')
    try {
       const app = initializeApp(firebaseConfig)
       auth = initializeAuth(app, {
@@ -60,23 +61,18 @@ function PhoneLogin({ navigation }: { navigation: any }) {
       //       formattedPhoneNumber,
       //       recaptchaVerifier.current as any,
       //    )
-      //    setVerificationId(verificationId as any)
-      //    setShowVerificationInput(true)
-      //    navigation.navigate('VerifyPhoneNumber', {
-      //       verificationId,
-      //       verificationCode,
-      //       phoneNumber,
-      //    })
-      //    Alert.alert('Success', 'Verification code sent successfully.')
-      // } catch (error) {
-      //    console.error('Error sending SMS verification:', error)
-      //    Alert.alert('Failed to send verification code.')
-      // }
+      setVerificationId(verificationId as any)
+      setShowVerificationInput(true)
       navigation.navigate('VerifyPhoneNumber', {
          verificationId,
          verificationCode,
          phoneNumber,
       })
+      //    Alert.alert('Success', 'Verification code sent successfully.')
+      // } catch (error) {
+      //    console.error('Error sending SMS verification:', error)
+      //    Alert.alert('Failed to send verification code.')
+      // }
    }
 
    return (
@@ -131,6 +127,17 @@ function PhoneLogin({ navigation }: { navigation: any }) {
             >
                <Text style={styles.sendCodeButtonText}>Continue</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+               onPress={() =>
+                  navigation.navigate('VerifyPhoneNumber', {
+                     verificationId,
+                     verificationCode,
+                     phoneNumber,
+                  })
+               }
+            >
+               <Text>SKIP</Text>
+            </TouchableOpacity>
          </View>
       </SafeAreaView>
    )
@@ -139,7 +146,7 @@ function PhoneLogin({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: '#ffffff',
+      backgroundColor: '#FFFAF0',
       paddingHorizontal: 24,
       paddingVertical: 20,
    },
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: '#FFC629',
    },
    header: {
       paddingBottom: 10,
@@ -199,9 +206,9 @@ const styles = StyleSheet.create({
       marginTop: 16,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#f8f8f8',
+      backgroundColor: COLORS.white,
       padding: 12,
-      borderRadius: 8,
+      borderRadius: 12,
    },
    privacyText: {
       fontSize: 14,

@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { useDispatch, useSelector } from 'react-redux'
 import { initialUserInfo } from '../../store/user/userAction'
+import { AlertModal } from '../../components'
+import { COLORS } from '../../constants/theme'
 
 function Infomation({ navigation }: { navigation: any }) {
    const [name, setName] = useState('')
@@ -12,7 +14,7 @@ function Infomation({ navigation }: { navigation: any }) {
    const [gender, setGender] = useState('')
    const dispatch: any = useDispatch()
    const { userId } = useSelector((state: any) => state.userState)
-
+   const [showAlert, setShowAlert] = useState(false)
    const handleDateChange = (event: any, selectedDate?: Date) => {
       if (selectedDate) {
          setBirthDate(selectedDate)
@@ -25,10 +27,10 @@ function Infomation({ navigation }: { navigation: any }) {
          gender.trim() !== '' &&
          birthDate.toString().trim() !== ''
       ) {
-         await dispatch(initialUserInfo(userId, name, gender, birthDate))
+         // await dispatch(initialUserInfo(userId, name, gender, birthDate))
          navigation.navigate('Interests')
       } else {
-         Alert.alert('Please fill in all the fields')
+         setShowAlert(true)
       }
    }
 
@@ -42,7 +44,6 @@ function Infomation({ navigation }: { navigation: any }) {
 
    return (
       <SafeAreaView style={styles.container}>
-
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#333" />
          </TouchableOpacity>
@@ -119,7 +120,16 @@ function Infomation({ navigation }: { navigation: any }) {
             <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
                <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Interests')}>
+               <Text>Skip</Text>
+            </TouchableOpacity>
          </View>
+         <AlertModal
+            visible={showAlert}
+            title="Oops!"
+            message="Please fill in all the fields"
+            onClose={() => setShowAlert(false)}
+         />
       </SafeAreaView>
    )
 }
@@ -127,7 +137,7 @@ function Infomation({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: COLORS.backgroundContent,
       paddingHorizontal: 24,
       paddingVertical: 20,
    },
@@ -138,7 +148,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: COLORS.backgroundButton,
    },
    header: {
       marginBottom: 30,
@@ -147,7 +157,7 @@ const styles = StyleSheet.create({
       fontSize: 28,
       fontWeight: '700',
       marginBottom: 10,
-      color: '#333',
+      color: COLORS.textColor,
    },
    headerSubtitle: {
       fontSize: 16,
@@ -161,12 +171,12 @@ const styles = StyleSheet.create({
       width: '100%',
       height: 50,
       borderWidth: 1,
-      borderColor: '#ddd',
+      borderColor: COLORS.border,
       borderRadius: 12,
       paddingHorizontal: 15,
       marginBottom: 20,
       fontSize: 16,
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.white,
    },
    dateInputContainer: {
       flexDirection: 'row',
@@ -177,21 +187,21 @@ const styles = StyleSheet.create({
       flex: 1,
       height: 50,
       borderWidth: 1,
-      borderColor: '#ddd',
+      borderColor: COLORS.border,
       borderRadius: 12,
       paddingHorizontal: 15,
       fontSize: 16,
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.white,
    },
    calendarButton: {
       position: 'absolute',
       right: 12,
-      padding: 8,
+      paddingHorizontal: 8,
    },
    dateText: {
       fontSize: 16,
       paddingTop: 12,
-      color: '#333',
+      color: COLORS.textColor,
    },
    genderContainer: {
       flexDirection: 'row',
@@ -206,27 +216,30 @@ const styles = StyleSheet.create({
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.white,
    },
    selectedGender: {
-      backgroundColor: '#FFC629',
-      borderColor: '#FFC629',
+      backgroundColor: COLORS.backgroundButton,
+      borderColor: COLORS.backgroundButton,
    },
    genderText: {
       fontSize: 16,
-      color: '#333',
+      fontWeight: '700',
+      color: COLORS.textColor,
    },
    selectedGenderText: {
-      color: '#FFF',
+      color: COLORS.white,
+      fontSize: 16,
+      fontWeight: '700',
    },
    continueButton: {
       width: '100%',
       height: 50,
-      backgroundColor: '#FFC629',
+      backgroundColor: COLORS.backgroundButton,
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
-      shadowColor: '#FFC629',
+      shadowColor: COLORS.backgroundButton,
       shadowOffset: {
          width: 0,
          height: 4,
@@ -236,7 +249,7 @@ const styles = StyleSheet.create({
       elevation: 4,
    },
    continueButtonText: {
-      color: '#333',
+      color: COLORS.textColor,
       fontSize: 16,
       fontWeight: '600',
    },

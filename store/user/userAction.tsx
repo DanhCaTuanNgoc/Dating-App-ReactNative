@@ -82,13 +82,19 @@ export const initialUserInfo =
 export const initialUserInterests =
    (userId: string, interests: object[]) => async (dispatch: any) => {
       try {
-         const response = await fetch(`${API_BASE_URL}/userInfo/initial/interests`, {
+         const response = await fetch(`${API_BASE_URL}/userInterests/initial`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ userId, interests }),
          })
+
+         const contentType = response.headers.get('content-type')
+         if (!contentType || !contentType.includes('application/json')) {
+            throw new Error("Server didn't return JSON")
+         }
+
          const data = await response.json()
          if (!response.ok) {
             throw new Error(data.error || 'Failed to get user interests')
@@ -99,3 +105,29 @@ export const initialUserInterests =
          throw error
       }
    }
+
+export const uploadImage = async (userId: string, base64Image: string) => {
+   try {
+      const response = await fetch(`${API_BASE_URL}/userPhotos/upload`, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+            userId,
+            photoData: `data:image/jpeg;base64,${base64Image}`,
+            isPrimary: false
+         }),
+      });
+
+      if (!response.ok) {
+         throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      return data;
+   } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+   }
+};
