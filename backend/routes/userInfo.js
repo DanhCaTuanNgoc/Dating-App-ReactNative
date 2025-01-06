@@ -13,6 +13,7 @@ router.post('/auth/phone', async (req, res) => {
       const existingUser = await pool.query(checkQuery, [phoneNumber])
 
       let userId
+      let userInfo
       if (existingUser.rows.length === 0) {
          const insertQuery = `
             INSERT INTO users (phone_number, is_active, last_active) 
@@ -22,6 +23,7 @@ router.post('/auth/phone', async (req, res) => {
          userId = newUser.rows[0].id
       } else {
          userId = existingUser.rows[0].id
+         userInfo = existingUser.rows[0]
          const updateQuery =
             'UPDATE users SET last_active = CURRENT_TIMESTAMP WHERE id = $1'
          await pool.query(updateQuery, [userId])
@@ -29,6 +31,7 @@ router.post('/auth/phone', async (req, res) => {
 
       res.status(200).json({
          userId,
+         userInfo,
          isNewUser: existingUser.rows.length === 0,
       })
    } catch (error) {
@@ -91,6 +94,91 @@ router.post('/initial', async (req, res) => {
    } catch (error) {
       console.error('Error in user info:', error)
       res.status(500).json({ error: 'Failed to process user info' })
+   }
+})
+
+router.get('/get/:userId', async (req, res) => {
+   const { userId } = req.params
+   try {
+      const query = 'SELECT * FROM users WHERE id = $1'
+      const result = await pool.query(query, [userId])
+      res.status(200).json(result.rows[0])
+   } catch (error) {
+      console.error('Error getting user info:', error)
+      res.status(500).json({ error: 'Failed to get user info' })
+   }
+})
+
+router.get('/get-education-and-relationship', async (req, res) => {
+   try {
+      const educationQuery = 'SELECT * FROM education_levels'
+      const educationResult = await pool.query(educationQuery)
+      const relationshipQuery = 'SELECT * FROM relationship_goals'
+      const relationshipResult = await pool.query(relationshipQuery)
+      res.status(200).json({
+         education: educationResult.rows,
+         relationship: relationshipResult.rows,
+      })
+   } catch (error) {
+      console.error('Error getting education and relationship:', error)
+      res.status(500).json({ error: 'Failed to get education and relationship' })
+   }
+})
+
+router.post('/update', async (req, res) => {
+   const {
+      userId,
+      name,
+      formattedDate,
+      gender,
+      bio,
+      educationId,
+      jobTitle,
+      relationshipGoalId,
+   } = req.body
+   try {
+      const query = `
+         UPDATE users
+         SET name = $1, birth_date = $2, gender = $3, bio = $4, education_id = $5, job_title = $6, relationship_goal_id = $7
+         WHERE id = $8
+         RETURNING id, name, birth_date, gender, bio, education_id, job_title, relationship_goal_id
+      `
+      const result = await pool.query(query, [
+         name,
+         formattedDate,
+         gender,
+         bio,
+         educationId,
+         jobTitle,
+         relationshipGoalId,
+         userId,
+      ])
+      res.status(200).json(result.rows[0])
+   } catch (error) {
+      console.error('Error updating user info:', error)
+      res.status(500).json({ error: 'Failed to update user info' })
+   }
+})
+
+router.post('/update-location', async (req, res) => {
+   const { userId, location } = req.body
+   try {
+      const { latitude, longitude } = location.coords
+      const query = `
+         UPDATE users 
+         SET location = ST_SetSRID(ST_MakePoint($1, $2), 4326)
+         WHERE id = $3
+         RETURNING ST_AsText(location) as location, 
+      `
+      const result = await pool.query(query, [longitude, latitude, userId])
+      res.json({
+         success: true,
+         location: result.rows[0].location,
+         newUserInfo: result.rows[0],
+      })
+   } catch (error) {
+      console.error('Error updating user location:', error)
+      res.status(500).json({ error: 'Failed to update user location' })
    }
 })
 

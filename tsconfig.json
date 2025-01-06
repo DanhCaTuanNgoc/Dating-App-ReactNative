@@ -17,5 +17,5 @@
       "backend/server.js",
       "backend/config/firebase-config.js",
       "backend/routes/userInterests.js"
-   ]
+, "backend/services/firebase.tsx"   ]
 }

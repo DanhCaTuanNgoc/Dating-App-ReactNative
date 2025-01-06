@@ -1,11 +1,14 @@
 export const COLORS = {
-   primary: '#FFD93D', // Bright yellow
-   secondary: '#FF9F29', // Light orange
-   tertiary: '#FF8E3C', // Soft orange
-
+   primary: '#8d39ec',
+   secondary: '#ea80fc',
+   tertiary: '#7827e6',
+   lightPurple: '#c098e8',
+   
    // Additional shades
    lightYellow: '#FFE169',
    paleOrange: '#FFBB5C',
+
+   //gaytheme
 
    // Common colors
    white: '#FFFFFF',
@@ -14,6 +17,13 @@ export const COLORS = {
    backgroundContent: '#FFFAF0', // Light cream background
    backgroundButton: '#FFC629',
    textColor: '#333',
+
+   //Alert colors
+   alertSuccess: '#228B22',
+   alertFail: '#FF0000',
+
+   //Card
+   heart: '#f64668',
 }
 
 export const SIZES = {

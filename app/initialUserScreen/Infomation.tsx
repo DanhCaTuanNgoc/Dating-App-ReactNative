@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { initialUserInfo } from '../../store/user/userAction'
 import { AlertModal } from '../../components'
 import { COLORS } from '../../constants/theme'
+import { UpdateUserFilters } from '../../store/matching/matchAction'
 
 function Infomation({ navigation }: { navigation: any }) {
    const [name, setName] = useState('')
@@ -27,8 +28,16 @@ function Infomation({ navigation }: { navigation: any }) {
          gender.trim() !== '' &&
          birthDate.toString().trim() !== ''
       ) {
-         // await dispatch(initialUserInfo(userId, name, gender, birthDate))
-         navigation.navigate('Interests')
+         if (
+            birthDate.getTime() > new Date().getTime() ||
+            new Date().getFullYear() - birthDate.getFullYear() < 18
+         ) {
+            setShowAlert(true)
+         } else {
+            await dispatch(initialUserInfo(userId, name, gender, birthDate))
+            await UpdateUserFilters(null, userId)(dispatch)
+            navigation.navigate('Interests')
+         }
       } else {
          setShowAlert(true)
       }
@@ -45,7 +54,7 @@ function Infomation({ navigation }: { navigation: any }) {
    return (
       <SafeAreaView style={styles.container}>
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
+            <Ionicons name="arrow-back" size={24} color="white" />
          </TouchableOpacity>
 
          <View style={styles.header}>
@@ -129,6 +138,8 @@ function Infomation({ navigation }: { navigation: any }) {
             title="Oops!"
             message="Please fill in all the fields"
             onClose={() => setShowAlert(false)}
+            iconName="alert-circle"
+            color="#FF6B6B"
          />
       </SafeAreaView>
    )
@@ -249,7 +260,7 @@ const styles = StyleSheet.create({
       elevation: 4,
    },
    continueButtonText: {
-      color: COLORS.textColor,
+      color: '#fff',
       fontSize: 16,
       fontWeight: '600',
    },

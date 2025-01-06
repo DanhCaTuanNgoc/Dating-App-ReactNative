@@ -13,80 +13,65 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { authPhoneNumber } from '../../store/user/userAction'
 import { useDispatch } from 'react-redux'
-import { setUserId } from '../../store/user/userReducer'
+import { setUserId, setUserInfo, setUserPhotos } from '../../store/user/userReducer'
+import { getUserPhotos, getUserInfo } from '../../store/user/userAction'
+import { auth } from '../../backend/services/firebase'
+
 function VerifyPhoneNumber({ route, navigation }: { route: any; navigation: any }) {
    const { verificationId, verificationCode: initialCode, phoneNumber } = route.params
    const [verificationCode, setVerificationCode] = useState(initialCode || '')
    const [isLoading, setIsLoading] = useState(false)
    const dispatch = useDispatch()
-
-   let auth: any
-   const firebaseConfig = require('../../backend/config/firebase-config')
-   try {
-      const app = initializeApp(firebaseConfig)
-      auth = initializeAuth(app, {
-         persistence: getReactNativePersistence(AsyncStorage),
-      })
-   } catch (error: any) {
-      if (error.code === 'auth/already-initialized') {
-         auth = getAuth()
-      } else {
-         console.error('Firebase initialization error:', error)
-      }
-   }
-
    // Xác nhận mã OTP
    const confirmCode = async () => {
-      // try {
-      //    if (!verificationId || !verificationCode) {
-      //       Alert.alert('Error', 'Please enter verification code')
-      //       return
-      //    }
+      try {
+         if (!verificationId || !verificationCode) {
+            Alert.alert('Error', 'Please enter verification code')
+            return
+         }
 
-      //    // Hiển thị loading state nếu cần
-      //    setIsLoading(true)
+         const credential = PhoneAuthProvider.credential(verificationId, verificationCode)
 
-      //    const credential = PhoneAuthProvider.credential(verificationId, verificationCode)
+         // Thêm timeout cho signInWithCredential
+         const signInPromise = signInWithCredential(auth, credential)
+         const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Timeout')), 30000),
+         )
 
-      //    // Thêm timeout cho signInWithCredential
-      //    const signInPromise = signInWithCredential(auth, credential)
-      //    const timeoutPromise = new Promise((_, reject) =>
-      //       setTimeout(() => reject(new Error('Timeout')), 30000),
-      //    )
+         const result = await Promise.race([signInPromise, timeoutPromise])
 
-      //    const result = await Promise.race([signInPromise, timeoutPromise])
+         const data = await authPhoneNumber(phoneNumber)(dispatch)
+         if (data.isNewUser) {
+            navigation.navigate('Infomation')
+         } else {
+            await getUserPhotos(data.userId)(dispatch)
+            await getUserInfo(data.userId)(dispatch)
+            navigation.navigate('HomeTab')
+         }
 
-      //    const data = await authPhoneNumber(phoneNumber)(dispatch)
-      //    if (data.isNewUser) {
-      //       navigation.navigate('Infomation')
-      //    } else {
-      //       navigation.navigate('Home')
-      //    }
-      // } catch (error: any) {
-      //    console.error('Verification error:', error)
+      } catch (error: any) {
+         console.error('Verification error:', error)
 
-      //    // Xử lý các loại lỗi cụ thể
-      //    let errorMessage = 'Verification failed. Please try again.'
-      //    if (error.message === 'Timeout') {
-      //       errorMessage = 'Connection timed out. Please check your internet connection.'
-      //    } else if (error.code === 'auth/invalid-verification-code') {
-      //       errorMessage = 'Invalid verification code. Please try again.'
-      //    } else if (error.code === 'auth/network-request-failed') {
-      //       errorMessage = 'Network error. Please check your internet connection.'
-      //    }
+         // Xử lý các loại lỗi cụ thể
+         let errorMessage = 'Verification failed. Please try again.'
+         if (error.message === 'Timeout') {
+            errorMessage = 'Connection timed out. Please check your internet connection.'
+         } else if (error.code === 'auth/invalid-verification-code') {
+            errorMessage = 'Invalid verification code. Please try again.'
+         } else if (error.code === 'auth/network-request-failed') {
+            errorMessage = 'Network error. Please check your internet connection.'
+         }
 
-      //    Alert.alert('Error', errorMessage)
-      // } finally {
-      //    setIsLoading(false) // Tắt loading state
-      // }
-      dispatch(setUserId('4'))
-      navigation.navigate('Infomation')
+         Alert.alert('Error', errorMessage)
+      } finally {
+         setIsLoading(false)
+      }
    }
 
    return (
       <SafeAreaView style={styles.container}>
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
+            <Ionicons name="arrow-back" size={24} color="white" />
          </TouchableOpacity>
 
          <View style={styles.header}>
@@ -177,7 +162,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
    },
    verifyButtonText: {
-      color: '#333',
+      color: '#fff',
       fontSize: 18,
       fontWeight: '600',
    },

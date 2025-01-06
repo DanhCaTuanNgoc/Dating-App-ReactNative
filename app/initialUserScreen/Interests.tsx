@@ -42,7 +42,6 @@ function Interests({ navigation }: { navigation: any }) {
 
    const handleContinue = async () => {
       if (selectedInterests.length > 0) {
-         console.log(selectedInterests, userId)
          await dispatch(initialUserInterests(userId, selectedInterests))
          navigation.navigate('Pictures')
       } else {
@@ -53,7 +52,7 @@ function Interests({ navigation }: { navigation: any }) {
    return (
       <SafeAreaView style={styles.container}>
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
+            <Ionicons name="arrow-back" size={24} color="white" />
          </TouchableOpacity>
 
          <View style={styles.header}>
@@ -212,7 +211,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#eee',
    },
    continueButtonText: {
-      color: '#333',
+      color: '#fff',
       fontSize: 16,
       fontWeight: 'bold',
    },

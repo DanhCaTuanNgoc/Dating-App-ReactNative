@@ -25,6 +25,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { COLORS } from '../../constants'
 import { auth } from '../../backend/services/firebase'
 import firebaseConfig from '../../backend/config/firebase-config'
+import { useDispatch } from 'react-redux'
+import { authPhoneNumber, getUserInfo, getUserPhotos } from '@/store/user/userAction'
+import { setUserId, setUserInfo, setUserPhotos } from '../../store/user/userReducer'
 
 LogBox.ignoreLogs([
    'Failed to initialize reCAPTCHA Enterprise config. Triggering the reCAPTCHA v2 verification.',
@@ -32,34 +35,25 @@ LogBox.ignoreLogs([
    'Warning: FirebaseRecaptcha: Support for defaultProps will be removed from function components',
 ])
 
-function PhoneLogin({ navigation }: { navigation: any }) {
+function DevLogin({ navigation }: { navigation: any }) {
    const [phoneNumber, setPhoneNumber] = useState('')
    const [verificationId, setVerificationId] = useState(null)
    const [verificationCode, setVerificationCode] = useState('')
    const [showVerificationInput, setShowVerificationInput] = useState(false)
    const [countryCode, setCountryCode] = useState('+84')
    const recaptchaVerifier = useRef(null)
-
+   const dispatch = useDispatch()
    const sendVerificationCode = async () => {
       try {
-         const phoneProvider = new PhoneAuthProvider(auth)
-         if (!recaptchaVerifier.current) {
-            Alert.alert('Error', 'reCAPTCHA not ready')
-            return
+         const data = await authPhoneNumber(phoneNumber)(dispatch)
+
+         if (data.isNewUser) {
+            navigation.navigate('Infomation')
+         } else {
+            await getUserPhotos(data.userId)(dispatch)
+            await getUserInfo(data.userId)(dispatch)
+            navigation.navigate('HomeTab')
          }
-         const formattedPhoneNumber = `${countryCode}${phoneNumber.replace(/^0+/, '')}`
-         const verificationId = await phoneProvider.verifyPhoneNumber(
-            formattedPhoneNumber,
-            recaptchaVerifier.current as any,
-         )
-         setVerificationId(verificationId as any)
-         setShowVerificationInput(true)
-         navigation.navigate('VerifyPhoneNumber', {
-            verificationId,
-            verificationCode,
-            phoneNumber,
-         })
-         Alert.alert('Success', 'Verification code sent successfully.')
       } catch (error) {
          Alert.alert('Failed to send verification code.')
       }
@@ -67,15 +61,6 @@ function PhoneLogin({ navigation }: { navigation: any }) {
 
    return (
       <SafeAreaView style={styles.container}>
-         <FirebaseRecaptchaVerifierModal
-            ref={recaptchaVerifier}
-            firebaseConfig={firebaseConfig}
-            // Thêm các props sau
-            attemptInvisibleVerification={false}
-            title="Prove you are human!"
-            cancelLabel="Close"
-         />
-
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
          </TouchableOpacity>
@@ -128,7 +113,7 @@ function PhoneLogin({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: '#FFFAF0',
+      backgroundColor: 'white',
       paddingHorizontal: 24,
       paddingVertical: 20,
    },
@@ -139,7 +124,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#FFC629',
+      backgroundColor: COLORS.primary,
    },
    header: {
       paddingBottom: 10,
@@ -223,7 +208,7 @@ const styles = StyleSheet.create({
       shadowRadius: 4,
    },
    sendCodeButtonActive: {
-      backgroundColor: '#FFC629',
+      backgroundColor: COLORS.primary,
    },
    sendCodeButtonText: {
       color: 'white',
@@ -232,4 +217,4 @@ const styles = StyleSheet.create({
    },
 })
 
-export default PhoneLogin
+export default DevLogin

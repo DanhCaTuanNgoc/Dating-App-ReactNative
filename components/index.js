@@ -1,3 +1,6 @@
-import AlertModal from './alertModal'
+import AlertModal from './AlertModal'
+import ShowImageModal from './ShowImageModal'
+import MatchingCard from './MatchingCard'
+import GradientText from './GradientText'
 
-export { AlertModal }
+export { AlertModal, GradientText, ShowImageModal, MatchingCard }

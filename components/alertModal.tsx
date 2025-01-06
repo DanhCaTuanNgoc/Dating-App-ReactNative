@@ -5,10 +5,19 @@ interface AlertModalProps {
    visible: boolean
    title: string
    message: string
+   iconName: keyof typeof Ionicons.glyphMap
+   color: string
    onClose: () => void
 }
 
-const AlertModal = ({ visible, title, message, onClose }: AlertModalProps) => {
+const AlertModal = ({
+   visible,
+   title,
+   message,
+   iconName,
+   color,
+   onClose,
+}: AlertModalProps) => {
    return (
       <Modal
          animationType="fade"
@@ -19,11 +28,14 @@ const AlertModal = ({ visible, title, message, onClose }: AlertModalProps) => {
          <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
                <View style={styles.modalHeader}>
-                  <Ionicons name="warning" size={40} color="#FFC629" />
+                  <Ionicons name={iconName} size={40} color={color} />
                </View>
                <Text style={styles.modalTitle}>{title}</Text>
                <Text style={styles.modalMessage}>{message}</Text>
-               <TouchableOpacity style={styles.modalButton} onPress={onClose}>
+               <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: color }]}
+                  onPress={onClose}
+               >
                   <Text style={styles.modalButtonText}>OK</Text>
                </TouchableOpacity>
             </View>
@@ -71,7 +83,6 @@ const styles = StyleSheet.create({
       lineHeight: 20,
    },
    modalButton: {
-      backgroundColor: '#FFC629',
       paddingVertical: 10,
       paddingHorizontal: 24,
       borderRadius: 12,

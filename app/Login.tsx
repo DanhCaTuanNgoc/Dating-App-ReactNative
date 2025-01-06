@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient'
 import { authGoogle } from '../store/user/userAction'
 import { useDispatch } from 'react-redux'
+import { COLORS } from '../constants/theme'
+import Ionicons from '@expo/vector-icons/Ionicons'
+
 WebBrowser.maybeCompleteAuthSession()
 
 export default function Login({ navigation }: any) {
@@ -14,7 +17,10 @@ export default function Login({ navigation }: any) {
          '70301397536-34cl9jufnru6flrpvp7qbet92k5rrhrv.apps.googleusercontent.com',
       iosClientId:
          '70301397536-tnhlab6r6uodkullco8pdptl7l83epl6.apps.googleusercontent.com',
+      androidClientId:
+         '70301397536-4k5g5k5g5k5g5k5g5k5g5k5g5k5g5k5g5.apps.googleusercontent.com', // Ensure this is correct for Android
    })
+
    const dispatch: any = useDispatch()
    useEffect(() => {
       handleSignInResponse()
@@ -61,7 +67,10 @@ export default function Login({ navigation }: any) {
    }
 
    return (
-      <LinearGradient colors={['#FFD93D', '#FF9F29', '#FF8E3C']} style={styles.container}>
+      <LinearGradient
+         colors={[COLORS.primary, COLORS.secondary, COLORS.tertiary]}
+         style={styles.container}
+      >
          <SafeAreaView style={styles.safeArea}>
             <View style={styles.content}>
                <Text style={styles.title}>Find Your Perfect Match</Text>
@@ -72,7 +81,11 @@ export default function Login({ navigation }: any) {
                   onPress={handleGoogleLogin}
                   disabled={!request}
                >
-                  <Text style={styles.buttonText}>Continue with Google</Text>
+                  <Text style={styles.buttonText}>Continue with Google </Text>
+                  <Image
+                     source={require('../assets/images/google.png')}
+                     style={styles.googleImage}
+                  />
                </TouchableOpacity>
 
                <TouchableOpacity
@@ -132,12 +145,18 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.25,
       shadowRadius: 3.84,
       elevation: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
    },
    buttonText: {
-      color: '#FF8E3C',
+      color: COLORS.textColor,
       textAlign: 'center',
       fontSize: 16,
       fontWeight: '600',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
    },
    terms: {
       fontSize: 12,
@@ -145,5 +164,10 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       marginTop: 20,
       paddingHorizontal: 20,
+   },
+   googleImage: {
+      width: 24,
+      height: 24,
+      marginLeft: 10,
    },
 })

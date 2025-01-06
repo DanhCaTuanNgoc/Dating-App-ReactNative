@@ -1,4 +1,4 @@
-const firebaseConfig = {
+export default firebaseConfig = {
    apiKey: 'AIzaSyDJN_KlxKnWmgxmxL7rlQS9zxlcFA8mBuM',
    authDomain: 'linder-7e0c0.firebaseapp.com',
    projectId: 'linder-7e0c0',
@@ -8,4 +8,4 @@ const firebaseConfig = {
    measurementId: 'G-7KEBN5X345',
 }
 
-module.exports = firebaseConfig
+

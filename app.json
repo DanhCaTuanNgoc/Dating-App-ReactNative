@@ -2,28 +2,53 @@
    "expo": {
       "name": "Linder",
       "slug": "Linder",
+      "owner": "danhcatuanngoc",
       "version": "1.0.0",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
-      "scheme": "myapp",
+      "scheme": "linder",
       "userInterfaceStyle": "automatic",
       "splash": {
          "image": "./assets/images/splash.png",
          "resizeMode": "contain",
          "backgroundColor": "#ffffff"
       },
-
       "ios": {
          "supportsTablet": true,
-         "bundleIdentifier": "com.danhcatuanngoc.linder",
-         "newArchEnabled": true
+         "bundleIdentifier": "com.danhcatuanngoc.Linder",
+         "infoPlist": {
+            "CFBundleURLTypes": [
+               {
+                  "CFBundleURLSchemes": ["com.danhcatuanngoc.Linder"]
+               }
+            ]
+         },
+         "newArchEnabled": true,
+         "config": {
+            "googleSignIn": {
+               "reservedClientId": "70301397536-tnhlab6r6uodkullco8pdptl7l83epl6.apps.googleusercontent.com"
+            }
+         }
       },
       "android": {
+         "package": "com.danhcatuanngoc.Linder",
          "newArchEnabled": true,
          "adaptiveIcon": {
             "foregroundImage": "./assets/images/adaptive-icon.png",
             "backgroundColor": "#ffffff"
-         }
+         },
+         "intentFilters": [
+            {
+               "action": "VIEW",
+               "autoVerify": true,
+               "data": [
+                  {
+                     "scheme": "com.danhcatuanngoc.Linder"
+                  }
+               ],
+               "category": ["BROWSABLE", "DEFAULT"]
+            }
+         ]
       },
       "web": {
          "bundler": "metro",
@@ -31,19 +56,32 @@
          "favicon": "./assets/images/favicon.png"
       },
       "plugins": [
-         ["expo-router"],
+         "expo-router",
          [
-            "expo-firebase-core",
+            "expo-build-properties",
             {
-               "androidGoogleServicesFile": "./google-services.json",
-               "iosGoogleServicesFile": "./GoogleService-Info.plist"
+               "ios": {
+                  "useFrameworks": "static"
+               },
+               "android": {
+                  "compileSdkVersion": 33,
+                  "targetSdkVersion": 33,
+                  "buildToolsVersion": "33.0.0"
+               }
             }
-         ],
-         "expo-font"
+         ]
       ],
       "experiments": {
          "typedRoutes": true
       },
-      "newArchEnabled": true
+      "newArchEnabled": true,
+      "extra": {
+         "router": {
+            "origin": false
+         },
+         "eas": {
+            "projectId": "bd4d1b88-26d6-4fcb-afb8-5cc80744421c"
+         }
+      }
    }
 }
