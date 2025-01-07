@@ -102,7 +102,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
          )
       }
    }
-   
+
    useEffect(() => {
       if (visible) {
          Animated.spring(slideAnim, {
@@ -128,12 +128,12 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
       const processedFilters = {
          age,
          distance,
-         gender: gender || 'everyone', // Đảm bảo luôn có giá trị mặc định
+         gender: gender,
          education: education || null, // Chuyển chuỗi rỗng thành null
          relationshipGoal: relationshipGoal || null, // Chuyển chuỗi rỗng thành null
          selectedInterests: selectedInterests.length > 0 ? selectedInterests : [], // Đảm bảo là mảng
       }
-
+      console.log(processedFilters)
       onApply(processedFilters)
       onClose()
    }
@@ -231,7 +231,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                            <Text style={styles.sectionTitle}>Show Me</Text>
                         </View>
                         <View style={styles.genderButtons}>
-                           {['Women', 'Men', 'Everyone'].map((option) => (
+                           {['Female', 'Male', 'Everyone'].map((option) => (
                               <TouchableOpacity
                                  key={option}
                                  style={[
@@ -274,6 +274,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  ]}
                                  onPress={() => {
                                     setEducation(edu.id)
+                                    console.log(edu.id)
                                  }}
                               >
                                  <Text
@@ -311,6 +312,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  ]}
                                  onPress={() => {
                                     setRelationshipGoal(rel.id)
+                                    console.log(rel.id)
                                  }}
                               >
                                  <Text

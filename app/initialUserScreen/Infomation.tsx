@@ -34,8 +34,9 @@ function Infomation({ navigation }: { navigation: any }) {
          ) {
             setShowAlert(true)
          } else {
+            let isNewUser = true
             await dispatch(initialUserInfo(userId, name, gender, birthDate))
-            await UpdateUserFilters(null, userId)(dispatch)
+            await UpdateUserFilters(null, userId, isNewUser)(dispatch)
             navigation.navigate('Interests')
          }
       } else {

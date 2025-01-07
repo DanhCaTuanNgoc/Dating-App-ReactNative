@@ -18,13 +18,13 @@ import {
    getMatchingListByFilters,
 } from '../../store/matching/matchAction'
 import { updateFiltersReducer, setMatchingList } from '@/store/matching/matchReducer'
-import Swiper from 'react-native-deck-swiper'
 import { useLocation } from '../../hooks/useLocation'
 import MaskedView from '@react-native-masked-view/masked-view'
-import { MatchingCard, GradientText } from '@/components'
+import { MatchingCard, GradientText, MatchingSwiper } from '@/components'
 import FilterModal from '@/components/FilterModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { MatchingSwiperRef } from '@/components/MatchingSwiper'
 
 function People() {
    const { errorMsg, newLocation, requestLocationPermission } = useLocation()
@@ -32,21 +32,27 @@ function People() {
    const { matchingList, defaultFilters } = useSelector((state: any) => state.matchState)
    const dispatch = useDispatch()
    const [isFilterVisible, setIsFilterVisible] = useState(false)
-   const swiperRef = useRef<Swiper<any>>(null)
-   const [number, setNumber] = useState(matchingList.length)
+   const swiperRef = useRef<MatchingSwiperRef>(null)
+   const [number, setNumber] = useState(0)
+   const [isLoading, setIsLoading] = useState(true)
+   const [isLastCardSwiped, setIsLastCardSwiped] = useState(false)
 
    const loadMatchingListByFilters = async () => {
       try {
+         setIsLoading(true)
          const filters = await AsyncStorage.getItem('filters')
          if (filters) {
             await getMatchingListByFilters(userId)(dispatch)
             await dispatch(updateFiltersReducer(JSON.parse(filters)))
          } else {
-            await UpdateUserFilters(defaultFilters, userId)(dispatch)
+            let isNewUser = false
+            await UpdateUserFilters(defaultFilters, userId, isNewUser)(dispatch)
             await getMatchingListByFilters(userId)(dispatch)
          }
       } catch (err) {
          console.error('Error in loadMatchingListByFilters:', err)
+      } finally {
+         setIsLoading(false)
       }
    }
 
@@ -56,10 +62,21 @@ function People() {
       }
    }, [userInfo])
 
+   useEffect(() => {
+      if (matchingList) {
+         setNumber(matchingList.length)
+      }
+   }, [matchingList])
+
    const handleSwipedRight = useCallback(
       (cardIndex: number) => {
          const swipedUser = matchingList[cardIndex]
          console.log('Liked user:', swipedUser.id)
+
+         if (cardIndex === matchingList.length - 1) {
+            setIsLastCardSwiped(true)
+         }
+         setNumber((prev) => prev - 1)
       },
       [matchingList],
    )
@@ -69,6 +86,11 @@ function People() {
          try {
             const swipedUser = matchingList[cardIndex]
             console.log('Disliked user:', swipedUser.id)
+
+            if (cardIndex === matchingList.length - 1) {
+               setIsLastCardSwiped(true)
+            }
+            setNumber((prev) => prev - 1)
          } catch (error) {
             console.error('Error disliking user:', error)
          }
@@ -90,7 +112,7 @@ function People() {
    }, [])
 
    const renderCard = useCallback(
-      (user: any) => {
+      (user: any, cardIndex: number) => {
          return <MatchingCard user={user} calculateAge={calculateAge} />
       },
       [calculateAge],
@@ -99,9 +121,9 @@ function People() {
    const handleApplyFilters = async (filters: any) => {
       await AsyncStorage.setItem('filters', JSON.stringify(filters))
       try {
-         await UpdateUserFilters(filters, userId)(dispatch)
+         let isNewUser = false
+         await UpdateUserFilters(filters, userId, isNewUser)(dispatch)
          loadMatchingListByFilters()
-         console.log('Applied filters and loaded matching list:', filters)
       } catch (err) {
          console.log(err)
       }
@@ -156,47 +178,20 @@ function People() {
                   <Text style={styles.locationButtonText}>Enable Location</Text>
                </TouchableOpacity>
             </View>
-         ) : matchingList && number > 0 ? (
+         ) : isLoading ? (
+            <View style={styles.loadingContainer}>
+               <ActivityIndicator size="large" color={COLORS.textColor} />
+               <Text style={styles.loadingText}>Finding people...</Text>
+            </View>
+         ) : matchingList && matchingList.length > 0 && !isLastCardSwiped ? (
             <Fragment>
                <View style={styles.swiperContainer}>
-                  <Swiper
-                     ref={swiperRef}
-                     cards={matchingList}
+                  <MatchingSwiper
+                     matchingList={matchingList}
                      renderCard={renderCard}
-                     cardHorizontalMargin={0}
-                     cardVerticalMargin={0}
                      onSwipedLeft={handleSwipedLeft}
                      onSwipedRight={handleSwipedRight}
-                     containerStyle={styles.swiper}
-                     backgroundColor="transparent"
-                     cardIndex={0}
-                     stackSize={matchingList.length}
-                     stackSeparation={2}
-                     verticalSwipe={false}
-                     overlayLabels={{
-                        left: {
-                           title: 'NOPE',
-                           style: {
-                              label: styles.overlayLabel,
-                              wrapper: styles.overlayWrapper,
-                           },
-                        },
-                        right: {
-                           title: 'LIKE',
-                           style: {
-                              label: {
-                                 ...styles.overlayLabel,
-                                 color: COLORS.heart,
-                              },
-                              wrapper: {
-                                 ...styles.overlayWrapper,
-                                 borderColor: COLORS.heart,
-                                 flexDirection: 'column',
-                                 alignItems: 'flex-start',
-                              },
-                           },
-                        },
-                     }}
+                     ref={swiperRef}
                   />
                </View>
                <View style={styles.actionButtons}>
@@ -400,6 +395,17 @@ const styles = StyleSheet.create({
    noUsersImage: {
       width: 300,
       height: 300,
+   },
+   loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+   },
+   loadingText: {
+      marginTop: SIZES.medium,
+      fontSize: SIZES.medium,
+      color: COLORS.textColor,
+      fontWeight: 'bold',
    },
 })
 

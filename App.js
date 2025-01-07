@@ -48,6 +48,7 @@ const HomeTab = ({ navigation }) => {
             },
             tabBarLabelStyle: {
                color: COLORS.black,
+               fontSize: 12,
             },
          })}
       >

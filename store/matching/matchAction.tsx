@@ -48,7 +48,7 @@ export const getMatchingListByFilters = (userId: string) => async (dispatch: any
    }
 }
 
-export const UpdateUserFilters = (filters: any, userId: any) => async (dispatch: any) => {
+export const UpdateUserFilters = (filters: any, userId: any, isNewUser: boolean) => async (dispatch: any) => {
    try {
       const response = await fetch(`${API_BASE_URL}/userMatch/update-filters`, {
          method: 'POST',
@@ -56,7 +56,7 @@ export const UpdateUserFilters = (filters: any, userId: any) => async (dispatch:
             'Content-Type': 'application/json',
             Accept: 'application/json',
          },
-         body: JSON.stringify({ filters, userId }),
+         body: JSON.stringify({ filters, userId, isNewUser }),
       })
       const data = await response.json()
       if (!response.ok) {
