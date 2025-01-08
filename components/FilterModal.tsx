@@ -38,8 +38,8 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
       (state: any) => state.userState,
    )
    const dispatch: any = useDispatch()
-   const [education, setEducation] = useState(null)
-   const [relationshipGoal, setRelationshipGoal] = useState(null)
+   const [education, setEducation] = useState<number | null>(null)
+   const [relationshipGoal, setRelationshipGoal] = useState<number | null>(null)
    const { filtersReducer } = useSelector((state: any) => state.matchState)
 
    const interests: object[] = [
@@ -274,7 +274,6 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  ]}
                                  onPress={() => {
                                     setEducation(edu.id)
-                                    console.log(edu.id)
                                  }}
                               >
                                  <Text
@@ -312,7 +311,6 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  ]}
                                  onPress={() => {
                                     setRelationshipGoal(rel.id)
-                                    console.log(rel.id)
                                  }}
                               >
                                  <Text
@@ -387,8 +385,8 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                         setAge([18, 35])
                         setDistance(10)
                         setGender('everyone')
-                        setEducation(null) // Thay đổi từ '' thành null
-                        setRelationshipGoal(null) // Thay đổi từ '' thành null
+                        setEducation(26)
+                        setRelationshipGoal(8)
                         setSelectedInterests([])
                      }}
                   >

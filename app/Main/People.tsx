@@ -20,7 +20,12 @@ import {
 import { updateFiltersReducer, setMatchingList } from '@/store/matching/matchReducer'
 import { useLocation } from '../../hooks/useLocation'
 import MaskedView from '@react-native-masked-view/masked-view'
-import { MatchingCard, GradientText, MatchingSwiper } from '@/components'
+import {
+   MatchingCard,
+   GradientText,
+   MatchingSwiper,
+   MatchingCardSkeleton,
+} from '@/components'
 import FilterModal from '@/components/FilterModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -179,11 +184,14 @@ function People() {
                </TouchableOpacity>
             </View>
          ) : isLoading ? (
-            <View style={styles.loadingContainer}>
-               <ActivityIndicator size="large" color={COLORS.textColor} />
-               <Text style={styles.loadingText}>Finding people...</Text>
+            <View style={styles.swiperContainer}>
+               <MatchingCardSkeleton />
+               <View style={styles.loadingTextContainer}>
+                  <ActivityIndicator size="small" color={COLORS.textColor} />
+                  <Text style={styles.loadingText}>Finding people...</Text>
+               </View>
             </View>
-         ) : matchingList && matchingList.length > 0 && !isLastCardSwiped ? (
+         ) : matchingList && number >= 0 ? (
             <Fragment>
                <View style={styles.swiperContainer}>
                   <MatchingSwiper
@@ -396,16 +404,21 @@ const styles = StyleSheet.create({
       width: 300,
       height: 300,
    },
-   loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-   },
    loadingText: {
       marginTop: SIZES.medium,
       fontSize: SIZES.medium,
       color: COLORS.textColor,
       fontWeight: 'bold',
+   },
+   loadingTextContainer: {
+      position: 'absolute',
+      bottom: 20,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: SIZES.small,
    },
 })
 

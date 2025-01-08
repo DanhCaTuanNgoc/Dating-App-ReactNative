@@ -63,18 +63,16 @@ function Pictures({ navigation }: any) {
       }
 
       try {
+         navigation.navigate('HomeTab')
          // Upload tất cả ảnh
          await Promise.all(
             localImages.map(async (image, index) => {
                await uploadImage(userId, image.base64, index === 0)(dispatch)
             }),
          )
-
          // Lấy thông tin user và photos mới, cập nhật state
          await getUserInfo(userId)(dispatch)
          await getUserPhotos(userId)(dispatch)
-
-         navigation.navigate('HomeTab')
       } catch (error) {
          console.error('Upload error:', error)
          Alert.alert('Error', 'Failed to upload images. Please try again.')
