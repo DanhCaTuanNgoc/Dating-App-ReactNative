@@ -16,6 +16,8 @@ import {
    EditProfile,
    DevLogin,
    Setting,
+   Photo,
+   ProfileV2,
 } from './app/index'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
@@ -52,7 +54,7 @@ const HomeTab = ({ navigation }) => {
             },
          })}
       >
-         <Tab.Screen name="Profile" component={Profile} />
+         <Tab.Screen name="Profile" component={ProfileV2} />
          <Tab.Screen name="People" component={People} />
          <Tab.Screen name="Chat" component={Chat} />
       </Tab.Navigator>
@@ -79,6 +81,7 @@ function App() {
                   <Stack.Screen name="Infomation" component={Infomation} />
                   <Stack.Screen name="Interests" component={Interests} />
                   <Stack.Screen name="Pictures" component={Pictures} />
+                  <Stack.Screen name="Photo" component={Photo} />
                   <Stack.Screen name="HomeTab" component={HomeTab} />
                   <Stack.Screen name="EditProfile" component={EditProfile} />
                   <Stack.Screen name="Setting" component={Setting} />

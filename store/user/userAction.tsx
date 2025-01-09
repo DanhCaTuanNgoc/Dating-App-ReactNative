@@ -190,26 +190,27 @@ export const getUserPhotos = (userId: string) => async (dispatch: any) => {
    }
 }
 
-export const deletePhoto = (photoId: string, userId: string) => async (dispatch: any) => {
-   try {
-      const response = await fetch(`${API_BASE_URL}/userPhotos/delete/${photoId}`, {
-         method: 'DELETE',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({ photoId, userId }),
-      })
-      const data = await response.json()
-      if (!response.ok) {
-         throw new Error(data.error || 'Failed to delete user photo')
+export const deletePhoto =
+   (photoId: string, userId: string, cloudinaryId: string) => async (dispatch: any) => {
+      try {
+         const response = await fetch(`${API_BASE_URL}/userPhotos/delete/${photoId}`, {
+            method: 'DELETE',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ photoId, userId, cloudinaryId }),
+         })
+         const data = await response.json()
+         if (!response.ok) {
+            throw new Error(data.error || 'Failed to delete user photo')
+         }
+         await dispatch(deleteUserPhoto(photoId))
+         return data
+      } catch (error) {
+         console.error('Error deleting user photo:', error)
+         throw error
       }
-      await dispatch(deleteUserPhoto(photoId))
-      return data
-   } catch (error) {
-      console.error('Error deleting user photo:', error)
-      throw error
    }
-}
 
 export const setPhotoAsPrimary =
    (photoId: string, currentPrimary: string, userId: string) => async (dispatch: any) => {

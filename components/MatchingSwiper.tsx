@@ -64,6 +64,7 @@ const MatchingSwiper = forwardRef<MatchingSwiperRef, MatchingSwiperProps>(
                      wrapper: {
                         ...styles.overlayWrapper,
                         borderColor: COLORS.heart,
+                        alignItems: 'flex-start',
                      },
                   },
                },

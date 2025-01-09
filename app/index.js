@@ -9,9 +9,11 @@ import Pictures from './initialUserScreen/Pictures'
 import People from './Main/People'
 import Chat from './Main/Chat'
 import Profile from './Main/Profile'
+import ProfileV2 from './Main/Profile-v2'
 import EditProfile from './Main/EditProfile'
 import DevLogin from './initialUserScreen/DevLogin'
 import Setting from './Main/Setting'
+import Photo from './Main/Photo'
 export {
    Login,
    Register,
@@ -25,6 +27,8 @@ export {
    Chat,
    Profile,
    EditProfile,
+   ProfileV2,
    DevLogin,
    Setting,
+   Photo,
 }

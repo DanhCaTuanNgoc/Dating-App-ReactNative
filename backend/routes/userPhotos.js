@@ -6,8 +6,6 @@ const cloudinary = require('../config/cloudinary')
 router.post('/upload', async (req, res) => {
    try {
       const { userId, photoData, isPrimary } = req.body
-
-      console.log('Vào oược route')
       if (!userId || !photoData) {
          return res.status(400).json({ error: 'Missing required fields' })
       }
@@ -30,10 +28,10 @@ router.post('/upload', async (req, res) => {
          eager_notification_url: process.env.CLOUDINARY_NOTIFICATION_URL, // Optional
       })
 
-      // Save to database
+      // Save to database with cloudinary_id
       const query = `
-         INSERT INTO user_photos (user_id, photo_url, is_primary)
-         VALUES ($1, $2, $3)
+         INSERT INTO user_photos (user_id, photo_url, is_primary, cloudinary_id)
+         VALUES ($1, $2, $3, $4)
          RETURNING *
       `
 
@@ -41,7 +39,10 @@ router.post('/upload', async (req, res) => {
          userId,
          uploadResponse.secure_url,
          isPrimary,
+         uploadResponse.public_id, // Lưu public_id
       ])
+
+      console.log('Lưu ảnh thành công')
 
       res.json({
          success: true,
@@ -66,13 +67,42 @@ router.get('/get/:userId', async (req, res) => {
 })
 
 router.delete('/delete/:photoId', async (req, res) => {
-   const { photoId, userId } = req.body
-   await pool.query('DELETE FROM user_photos WHERE id = $1 AND user_id = $2', [
-      photoId,
-      userId,
-   ])
-   
-   res.json({ success: true })
+   try {
+      const { photoId, userId } = req.body
+
+      // Lấy cloudinary_id trước khi xóa
+      const photoQuery = await pool.query(
+         'SELECT cloudinary_id FROM user_photos WHERE id = $1 AND user_id = $2',
+         [photoId, userId],
+      )
+
+      if (photoQuery.rows.length === 0) {
+         return res.status(404).json({ error: 'Photo not found' })
+      }
+
+      const { cloudinary_id } = photoQuery.rows[0]
+
+      // Xóa ảnh từ Cloudinary
+      if (cloudinary_id) {
+         await cloudinary.uploader.destroy(cloudinary_id)
+      }
+
+      // Xóa record từ database
+      await pool.query('DELETE FROM user_photos WHERE id = $1 AND user_id = $2', [
+         photoId,
+         userId,
+      ])
+
+      console.log('Xóa ảnh thành công')
+
+      res.json({ success: true })
+   } catch (error) {
+      console.error('Delete error:', error)
+      res.status(500).json({
+         error: 'Failed to delete photo',
+         details: error.message,
+      })
+   }
 })
 
 router.put('/set-primary/:photoId', async (req, res) => {

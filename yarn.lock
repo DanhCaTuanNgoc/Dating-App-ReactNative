@@ -6512,6 +6512,11 @@ expo-av@^13.6.0:
   resolved "https://registry.npmjs.org/expo-av/-/expo-av-13.10.6.tgz"
   integrity sha512-h3c1fg5yhWnP0RIGO+fhgPx6cmh4B4lnKdXR2i69aC3vs5D5Cu+JlzBon1gLIu6eUo2IVfC0RjSLpfQbcJ4doQ==
 
+expo-blur@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/expo-blur/-/expo-blur-14.0.1.tgz"
+  integrity sha512-3Q6jFBLbY8n2vwk28ycUC+eIlVhnlqwkXUKk/Lfaj+SGV3AZMQyrixe7OYwJdUfwqETBrnYYMB6uNrJzOSbG+g==
+
 expo-build-properties@~0.13.1:
   version "0.13.1"
   resolved "https://registry.npmjs.org/expo-build-properties/-/expo-build-properties-0.13.1.tgz"
@@ -9235,6 +9240,11 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
+lottie-react-native@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.npmjs.org/lottie-react-native/-/lottie-react-native-7.2.1.tgz"
+  integrity sha512-edH3G9iiK2NdxKmNWw1daIVxtofjUEU3g/OOww4PVw8hG6OY9tElvxugHYsLJG5OJYrTjHGo+tkA/3+OGhnSdg==
+
 lower-case@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/lower-case/-/lower-case-2.0.2.tgz"
@@ -11142,6 +11152,11 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-confetti-cannon@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.npmjs.org/react-native-confetti-cannon/-/react-native-confetti-cannon-1.5.2.tgz"
+  integrity sha512-IZuWjlW7QsdxEGNnvpD6W+7iKCCQhnd5BvuNvMtirU7Nxm8WS2N6LPGMBz1ZYDuusG+GRZkoXXTNCdoAAGpCTg==
+
 react-native-deck-swiper@^2.0.17:
   version "2.0.17"
   resolved "https://registry.npmjs.org/react-native-deck-swiper/-/react-native-deck-swiper-2.0.17.tgz"
@@ -11307,7 +11322,7 @@ react-native-webview@*, react-native-webview@13.12.4:
     escape-string-regexp "^4.0.0"
     invariant "2.2.4"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@> 0.50.0", react-native@>=0.40.0, react-native@>=0.49.1, react-native@>=0.57, react-native@>=0.73.0, react-native@0.76.2:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@> 0.50.0", react-native@>=0.40.0, react-native@>=0.46, react-native@>=0.49.1, react-native@>=0.57, react-native@>=0.73.0, react-native@0.76.2:
   version "0.76.2"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.76.2.tgz"
   integrity sha512-mkEBKGOmJxhfq8IOsvmk0QuTzlBt9vS+uo0gwbqfUmEDqoC359v80zhUf94WimYBrBkpRQWFbEu5iqMDHrYzlQ==

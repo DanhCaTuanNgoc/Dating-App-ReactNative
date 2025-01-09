@@ -16,13 +16,15 @@ function ShowImageModal({
    onDelete,
    onSetAsPrimary,
    photoId,
+   cloudinaryId,
 }: {
    visible: boolean
    imageUrl: string
    onClose: () => void
-   onDelete: (photoId: string) => void
+   onDelete: (photoId: string, cloudinaryId: string) => void
    onSetAsPrimary: (photoId: string) => void
    photoId: string
+   cloudinaryId: string
 }) {
    const screenWidth = Dimensions.get('window').width
    const screenHeight = Dimensions.get('window').height
@@ -37,7 +39,7 @@ function ShowImageModal({
             text: 'Delete',
             onPress: () => {
                onClose()
-               onDelete(photoId)
+               onDelete(photoId, cloudinaryId)
             },
             style: 'destructive',
          },

@@ -6,10 +6,10 @@ import {
    TouchableOpacity,
    ActivityIndicator,
    Platform,
+   Alert,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SIZES } from '../../constants/theme'
-import { LinearGradient } from 'expo-linear-gradient'
 import { useEffect, useState, useCallback, Fragment, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import React from 'react'
@@ -19,28 +19,33 @@ import {
 } from '../../store/matching/matchAction'
 import { updateFiltersReducer, setMatchingList } from '@/store/matching/matchReducer'
 import { useLocation } from '../../hooks/useLocation'
-import MaskedView from '@react-native-masked-view/masked-view'
 import {
    MatchingCard,
    GradientText,
    MatchingSwiper,
    MatchingCardSkeleton,
+   MatchCelebration,
 } from '@/components'
 import FilterModal from '@/components/FilterModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { MatchingSwiperRef } from '@/components/MatchingSwiper'
 
-function People() {
+import { API_BASE_URL } from '../../store/IPv4'
+import { addMatch } from '@/store/matching/matchReducer'
+
+function People({ navigation }: { navigation: any }) {
    const { errorMsg, newLocation, requestLocationPermission } = useLocation()
    const { userId, userInfo } = useSelector((state: any) => state.userState)
    const { matchingList, defaultFilters } = useSelector((state: any) => state.matchState)
-   const dispatch = useDispatch()
    const [isFilterVisible, setIsFilterVisible] = useState(false)
    const swiperRef = useRef<MatchingSwiperRef>(null)
    const [number, setNumber] = useState(0)
    const [isLoading, setIsLoading] = useState(true)
    const [isLastCardSwiped, setIsLastCardSwiped] = useState(false)
+   const [matchedUser, setMatchedUser] = useState<any>(null)
+   const [showMatchCelebration, setShowMatchCelebration] = useState(false)
+   const dispatch = useDispatch()
 
    const loadMatchingListByFilters = async () => {
       try {
@@ -73,18 +78,54 @@ function People() {
       }
    }, [matchingList])
 
-   const handleSwipedRight = useCallback(
-      (cardIndex: number) => {
-         const swipedUser = matchingList[cardIndex]
-         console.log('Liked user:', swipedUser.id)
+   console.log(number)
 
-         if (cardIndex === matchingList.length - 1) {
-            setIsLastCardSwiped(true)
+   const handleSwipedRight = async (index: number) => {
+      try {
+         const targetUser = matchingList[index]
+         const response = await fetch(`${API_BASE_URL}/userMatch/action`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+               userId,
+               targetUserId: targetUser.id,
+               action: 'like',
+            }),
+         })
+
+         if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
          }
-         setNumber((prev) => prev - 1)
-      },
-      [matchingList],
-   )
+
+         const data = await response.json()
+
+         if (data.success) {
+            if (data.matched && !data.message) {
+               setMatchedUser({
+                  name: targetUser.name,
+                  avatar_url: targetUser.photos?.[0]?.photo_url || '',
+                  matched_at: new Date().toISOString(),
+               })
+               dispatch(
+                  addMatch({
+                     id: data.matchId,
+                     user: targetUser,
+                     matched_at: new Date().toISOString(),
+                  }),
+               )
+               setShowMatchCelebration(true)
+            }
+         } else {
+            console.error('Action failed:', data.error)
+            Alert.alert('Error', data.error || 'Failed to process action')
+         }
+      } catch (error) {
+         console.error('Like error:', error)
+         Alert.alert('Error', 'Failed to process action. Please try again.')
+      }
+   }
 
    const handleSwipedLeft = useCallback(
       (cardIndex: number) => {
@@ -191,7 +232,7 @@ function People() {
                   <Text style={styles.loadingText}>Finding people...</Text>
                </View>
             </View>
-         ) : matchingList && number >= 0 ? (
+         ) : matchingList && number > 0 ? (
             <Fragment>
                <View style={styles.swiperContainer}>
                   <MatchingSwiper
@@ -242,6 +283,13 @@ function People() {
             visible={isFilterVisible}
             onClose={() => setIsFilterVisible(false)}
             onApply={handleApplyFilters}
+         />
+
+         <MatchCelebration
+            visible={showMatchCelebration}
+            onAnimationComplete={() => {
+               setShowMatchCelebration(false)
+            }}
          />
       </SafeAreaView>
    )

@@ -4,5 +4,15 @@ import MatchingCard from './MatchingCard'
 import GradientText from './GradientText'
 import MatchingSwiper from './MatchingSwiper'
 import MatchingCardSkeleton from './MatchingCardSkeleton'
-
-export { AlertModal, GradientText, ShowImageModal, MatchingCard, MatchingSwiper, MatchingCardSkeleton }
+import MatchModal from './MatchModal'
+import MatchCelebration from './MatchCelebration'
+export {
+   AlertModal,
+   GradientText,
+   ShowImageModal,
+   MatchingCard,
+   MatchingSwiper,
+   MatchingCardSkeleton,
+   MatchModal,
+   MatchCelebration,
+}

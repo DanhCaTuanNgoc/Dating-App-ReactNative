@@ -244,4 +244,116 @@ router.get('/get-filters', async (req, res) => {
    res.json(filters.rows[0])
 })
 
+// API tạo like/dislike
+router.post('/action', async (req, res) => {
+   try {
+      const { userId, targetUserId, action } = req.body
+
+      // Validate input
+      if (!userId || !targetUserId || !action) {
+         return res.status(400).json({
+            success: false,
+            error: 'Missing required fields',
+         })
+      }
+
+      // Lưu action vào match_history
+      try {
+         await pool.query(
+            'INSERT INTO match_history (user_id, target_user_id, action) VALUES ($1, $2, $3)',
+            [userId, targetUserId, action],
+         )
+      } catch (err) {
+         // Nếu action đã tồn tại, bỏ qua
+         if (err.code === '23505') {
+            // Unique violation
+            console.log('Action already exists')
+         } else {
+            throw err
+         }
+      }
+
+      // Nếu action là like, kiểm tra match
+      if (action === 'like') {
+         // Kiểm tra mutual like
+         const mutualLike = await pool.query(
+            'SELECT * FROM match_history WHERE user_id = $1 AND target_user_id = $2 AND action = $3',
+            [targetUserId, userId, 'like'],
+         )
+
+         if (mutualLike.rows.length > 0) {
+            // Kiểm tra xem match đã tồn tại chưa
+            const existingMatch = await pool.query(
+               `SELECT * FROM matches 
+                WHERE (user_id_1 = $1 AND user_id_2 = $2)
+                OR (user_id_1 = $2 AND user_id_2 = $1)`,
+               [userId, targetUserId],
+            )
+
+            if (existingMatch.rows.length === 0) {
+               // Sắp xếp user_id để đảm bảo tính nhất quán
+               const [smallerId, largerId] = [userId, targetUserId].sort()
+
+               // Tạo match mới
+               const matchResult = await pool.query(
+                  'INSERT INTO matches (user_id_1, user_id_2, status) VALUES ($1, $2, $3) RETURNING id',
+                  [smallerId, largerId, 'matched'],
+               )
+
+               // Lấy thông tin user để trả về
+               const targetUserInfo = await pool.query(
+                  'SELECT id, name FROM users WHERE id = $1',
+                  [targetUserId],
+               )
+
+               return res.json({
+                  success: true,
+                  matched: true,
+                  matchId: matchResult.rows[0].id,
+                  targetUser: targetUserInfo.rows[0],
+               })
+            } else {
+               return res.json({
+                  success: true,
+                  matched: false,
+                  message: 'Match already exists',
+               })
+            }
+         }
+      }
+
+      res.json({ success: true, matched: false })
+   } catch (error) {
+      console.error('Match action error:', error)
+      res.status(500).json({
+         success: false,
+         error: 'Server error',
+         details: error.message,
+      })
+   }
+})
+
+// API lấy danh sách matches
+router.get('/list/:userId', async (req, res) => {
+   try {
+      const { userId } = req.params
+      const matches = await pool.query(
+         `SELECT m.*, 
+                   u.name, u.bio,
+                   up.photo_url as avatar_url
+            FROM matches m
+            JOIN users u ON (u.id = m.user_id_1 OR u.id = m.user_id_2)
+            LEFT JOIN user_photos up ON up.user_id = u.id AND up.is_primary = true
+            WHERE (m.user_id_1 = $1 OR m.user_id_2 = $1)
+            AND m.status = 'matched'
+            AND u.id != $1`,
+         [userId],
+      )
+      res.json(matches.rows)
+   } catch (error) {
+      console.error('Get matches error:', error)
+      res.status(500).json({ error: 'Server error' })
+   }
+})
+
 module.exports = router

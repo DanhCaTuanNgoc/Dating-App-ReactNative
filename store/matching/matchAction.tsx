@@ -48,28 +48,28 @@ export const getMatchingListByFilters = (userId: string) => async (dispatch: any
    }
 }
 
-export const UpdateUserFilters = (filters: any, userId: any, isNewUser: boolean) => async (dispatch: any) => {
-   try {
-      const response = await fetch(`${API_BASE_URL}/userMatch/update-filters`, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-         },
-         body: JSON.stringify({ filters, userId, isNewUser }),
-      })
-      const data = await response.json()
-      if (!response.ok) {
-         throw new Error(data.error || 'Failed to add user filters')
+export const UpdateUserFilters =
+   (filters: any, userId: any, isNewUser: boolean) => async (dispatch: any) => {
+      try {
+         const response = await fetch(`${API_BASE_URL}/userMatch/update-filters`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               Accept: 'application/json',
+            },
+            body: JSON.stringify({ filters, userId, isNewUser }),
+         })
+         const data = await response.json()
+         if (!response.ok) {
+            throw new Error(data.error || 'Failed to add user filters')
+         }
+         dispatch(updateFiltersReducer(filters))
+         return data
+      } catch (error) {
+         console.error('Error adding user filters:', error)
+         throw error
       }
-      dispatch(updateFiltersReducer(filters))
-      console.log(data)
-      return data
-   } catch (error) {
-      console.error('Error adding user filters:', error)
-      throw error
    }
-}
 
 export const getUserFilters = (userId: any) => async (dispatch: any) => {
    const response = await fetch(`${API_BASE_URL}/userMatch/get-filters?userId=${userId}`)
