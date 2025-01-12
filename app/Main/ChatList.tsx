@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, StyleSheet } from 'react-native'
+import { View, FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { chatService } from '@/backend/services/chatService'
 import ChatListItem from '@/components/ChatListItem'
+import ChatListItemSkeleton from '@/components/ChatListItemSkeleton'
 import { useSelector } from 'react-redux'
-import { getUserInfo, getUserPhotos } from '@/store/user/userAction'
 import { API_BASE_URL } from '@/store/IPv4'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useDispatch } from 'react-redux'
+import { Ionicons } from '@expo/vector-icons'
+import { COLORS } from '@/constants/theme'
 
 export default function ChatList({ navigation }: { navigation: any }) {
    const [conversations, setConversations] = useState<any[]>([])
+   const [searchQuery, setSearchQuery] = useState('')
+   const [isLoading, setIsLoading] = useState(true)
    const userId = useSelector((state: any) => state.userState.userId)
-   const dispatch = useDispatch()
 
    useEffect(() => {
       const unsubscribe = chatService.subscribeToConversations(
@@ -57,9 +59,10 @@ export default function ChatList({ navigation }: { navigation: any }) {
                   }),
                )
                setConversations(conversationsWithUsers)
-               console.log(conversationsWithUsers)
+               setIsLoading(false)
             } catch (error) {
                console.error('Error processing conversations:', error)
+               setIsLoading(false)
             }
          },
       )
@@ -74,8 +77,18 @@ export default function ChatList({ navigation }: { navigation: any }) {
       })
    }
 
-   return (
-      <SafeAreaView style={styles.container}>
+   const renderContent = () => {
+      if (isLoading) {
+         return (
+            <FlatList
+               data={[1, 2, 3, 4, 5]} // Số lượng skeleton items
+               renderItem={() => <ChatListItemSkeleton />}
+               keyExtractor={(item) => item.toString()}
+            />
+         )
+      }
+
+      return (
          <FlatList
             data={conversations}
             renderItem={({ item }) => (
@@ -83,6 +96,33 @@ export default function ChatList({ navigation }: { navigation: any }) {
             )}
             keyExtractor={(item) => item.id}
          />
+      )
+   }
+
+   return (
+      <SafeAreaView style={styles.container}>
+         <View style={styles.searchContainer}>
+            <View style={styles.searchWrapper}>
+               <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+               <TextInput
+                  style={styles.searchInput}
+                  placeholder="Tìm kiếm người dùng..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholderTextColor="#999"
+               />
+               {searchQuery.length > 0 && (
+                  <TouchableOpacity
+                     onPress={() => setSearchQuery('')}
+                     style={styles.clearButton}
+                  >
+                     <Ionicons name="close-circle" size={20} color="#666" />
+                  </TouchableOpacity>
+               )}
+            </View>
+         </View>
+
+         {renderContent()}
       </SafeAreaView>
    )
 }
@@ -91,5 +131,31 @@ const styles = StyleSheet.create({
    container: {
       flex: 1,
       backgroundColor: '#fff',
+   },
+   searchContainer: {
+      padding: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#eee',
+      backgroundColor: COLORS.white,
+   },
+   searchWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#f5f5f5',
+      borderRadius: 25,
+      paddingHorizontal: 15,
+      height: 45,
+   },
+   searchIcon: {
+      marginRight: 10,
+   },
+   searchInput: {
+      flex: 1,
+      fontSize: 16,
+      color: '#000',
+      height: '100%',
+   },
+   clearButton: {
+      padding: 5,
    },
 })

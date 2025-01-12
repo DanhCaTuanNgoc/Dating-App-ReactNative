@@ -24,6 +24,8 @@ function EditProfile({ navigation }: { navigation: any }) {
       userId,
    } = useSelector((state: any) => state.userState)
 
+   console.log(userInfo)
+
    const [name, setName] = useState(userInfo?.name)
    const [bio, setBio] = useState(userInfo?.bio)
    const [education, setEducation] = useState(userInfo?.education_id)
@@ -133,7 +135,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                   value={bio}
                   onChangeText={setBio}
                   placeholder="Write something about yourself"
-                  placeholderTextColor={COLORS.border}
+                  placeholderTextColor={'#999'}
                   multiline
                   numberOfLines={4}
                />
@@ -146,6 +148,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                   value={occupation}
                   onChangeText={setOccupation}
                   placeholder="Enter your occupation"
+                  placeholderTextColor={'#999'}
                />
             </View>
             <Text style={styles.label}>Birth date</Text>
@@ -154,7 +157,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                   style={styles.dateInput}
                   value={formatDate(birthDate)}
                   placeholder="Select your birth date"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={'#999'}
                   editable={false}
                />
                <DateTimePicker

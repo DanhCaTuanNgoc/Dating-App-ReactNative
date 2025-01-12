@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { COLORS } from '@/constants/theme'
-import { Message } from '@/components/chat'
+import { Message } from '@/types/chat'
 
 interface MessageBubbleProps {
    message: Message

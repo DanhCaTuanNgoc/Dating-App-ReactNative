@@ -31,7 +31,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
    const [age, setAge] = useState([18, 35])
    const [selectedInterests, setSelectedInterests] = useState<any>([])
    const [distance, setDistance] = useState(10)
-   const [gender, setGender] = useState('everyone')
+   const [gender, setGender] = useState('all')
    const slideAnim = useRef(new Animated.Value(height)).current
    const panY = useRef(new Animated.Value(0)).current
    const { education: educationQuery, relationship: relationshipQuery } = useSelector(
@@ -124,16 +124,15 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
    }, [visible])
 
    const handleApply = () => {
-      // Xử lý và validate dữ liệu trước khi gửi
       const processedFilters = {
          age,
          distance,
          gender: gender,
-         education: education || null, // Chuyển chuỗi rỗng thành null
-         relationshipGoal: relationshipGoal || null, // Chuyển chuỗi rỗng thành null
-         selectedInterests: selectedInterests.length > 0 ? selectedInterests : [], // Đảm bảo là mảng
+         education: education || null,
+         relationshipGoal: relationshipGoal || null,
+         selectedInterests: selectedInterests.length > 0 ? selectedInterests : [],
       }
-      console.log(processedFilters)
+
       onApply(processedFilters)
       onClose()
    }
@@ -231,24 +230,24 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                            <Text style={styles.sectionTitle}>Show Me</Text>
                         </View>
                         <View style={styles.genderButtons}>
-                           {['Female', 'Male', 'Everyone'].map((option) => (
+                           {['female', 'male', 'all'].map((option) => (
                               <TouchableOpacity
                                  key={option}
                                  style={[
                                     styles.genderButton,
-                                    gender === option.toLowerCase() &&
-                                       styles.selectedGender,
+                                    gender === option && styles.selectedGender,
                                  ]}
-                                 onPress={() => setGender(option.toLowerCase())}
+                                 onPress={() => setGender(option)}
                               >
                                  <Text
                                     style={[
                                        styles.genderButtonText,
-                                       gender === option.toLowerCase() &&
-                                          styles.selectedGenderText,
+                                       gender === option && styles.selectedGenderText,
                                     ]}
                                  >
-                                    {option}
+                                    {option === 'all'
+                                       ? 'Everyone'
+                                       : option.charAt(0).toUpperCase() + option.slice(1)}
                                  </Text>
                               </TouchableOpacity>
                            ))}
@@ -384,7 +383,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                      onPress={() => {
                         setAge([18, 35])
                         setDistance(10)
-                        setGender('everyone')
+                        setGender('all')
                         setEducation(26)
                         setRelationshipGoal(8)
                         setSelectedInterests([])

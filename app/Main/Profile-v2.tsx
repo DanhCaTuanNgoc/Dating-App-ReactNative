@@ -14,22 +14,8 @@ import { COLORS, SIZES } from '../../constants/theme'
 import { Ionicons } from '@expo/vector-icons'
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import * as ImagePicker from 'expo-image-picker'
-import * as ImageManipulator from 'expo-image-manipulator'
-import { Alert } from 'react-native'
-import { useDispatch } from 'react-redux'
-import { deletePhoto, setPhotoAsPrimary, uploadImage } from '../../store/user/userAction'
-import { ShowImageModal } from '../../components'
-import { useAge } from '../../hooks/useAge'
 import { BlurView } from 'expo-blur'
-import Animated, {
-   useAnimatedStyle,
-   withSpring,
-   useSharedValue,
-   withSequence,
-   withDelay,
-   FadeInUp,
-} from 'react-native-reanimated'
+import { useAge } from '../../hooks/useAge'
 
 function ProfileV2({ navigation }: { navigation: any }) {
    const [screen, setScreen] = useState<'profile' | 'photos'>('profile')
@@ -40,20 +26,7 @@ function ProfileV2({ navigation }: { navigation: any }) {
       education,
       relationship,
    } = useSelector((state: any) => state.userState)
-   const dispatch: any = useDispatch()
-   const [selectedPhoto, setSelectedPhoto] = useState<any>({})
-   const [isImageViewVisible, setIsImageViewVisible] = useState(false)
-   const [isEditMode, setIsEditMode] = useState(false)
    const age = useAge(userInfo.birth_date)
-   const scaleAnim = useSharedValue(0)
-
-   useEffect(() => {
-      scaleAnim.value = withSequence(withSpring(1.1), withDelay(100, withSpring(1)))
-   }, [])
-
-   const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scaleAnim.value }],
-   }))
 
    return (
       <View style={styles.container}>
@@ -63,7 +36,7 @@ function ProfileV2({ navigation }: { navigation: any }) {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
          >
-            <Animated.View style={[styles.profileHeader, animatedStyle]}>
+            <View style={styles.profileHeader}>
                <View style={styles.imageContainer}>
                   <Image
                      source={{
@@ -91,7 +64,7 @@ function ProfileV2({ navigation }: { navigation: any }) {
                <Text style={styles.userName}>
                   {userInfo.name}, {age}
                </Text>
-            </Animated.View>
+            </View>
          </LinearGradient>
 
          <View style={styles.buttonContainer}>

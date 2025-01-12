@@ -52,15 +52,9 @@ function People({ navigation }: { navigation: any }) {
    const loadMatchingListByFilters = async () => {
       try {
          setIsLoading(true)
-         const filters = await AsyncStorage.getItem('filters')
-         if (filters) {
-            await getMatchingListByFilters(userId)(dispatch)
-            await dispatch(updateFiltersReducer(JSON.parse(filters)))
-         } else {
-            let isNewUser = false
-            await UpdateUserFilters(defaultFilters, userId, isNewUser)(dispatch)
-            await getMatchingListByFilters(userId)(dispatch)
-         }
+         let isNewUser = false
+         await UpdateUserFilters(defaultFilters, userId, isNewUser)(dispatch)
+         await getMatchingListByFilters(userId)(dispatch)
       } catch (err) {
          console.error('Error in loadMatchingListByFilters:', err)
       } finally {
@@ -79,8 +73,6 @@ function People({ navigation }: { navigation: any }) {
          setNumber(matchingList.length)
       }
    }, [matchingList])
-
-   console.log(number)
 
    const handleSwipedRight = async (index: number) => {
       try {
@@ -173,10 +165,10 @@ function People({ navigation }: { navigation: any }) {
    )
 
    const handleApplyFilters = async (filters: any) => {
-      await AsyncStorage.setItem('filters', JSON.stringify(filters))
       try {
          let isNewUser = false
          await UpdateUserFilters(filters, userId, isNewUser)(dispatch)
+         console.log(filters)
          loadMatchingListByFilters()
       } catch (err) {
          console.log(err)

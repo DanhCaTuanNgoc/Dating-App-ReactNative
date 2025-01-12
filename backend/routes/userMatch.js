@@ -28,15 +28,27 @@ router.get('/matching-list-by-filters', async (req, res) => {
       WITH user_prefs AS (
          SELECT * FROM user_preferences WHERE user_id = $1
       ),
+      matched_users AS (
+         -- Lấy danh sách user_id đã match
+         SELECT 
+            CASE 
+               WHEN user_id_1 = $1 THEN user_id_2
+               ELSE user_id_1
+            END as matched_user_id
+         FROM matches 
+         WHERE user_id_1 = $1 OR user_id_2 = $1
+      ),
       filtered_users AS (
          SELECT u.* 
          FROM users u
          CROSS JOIN user_prefs pref
          WHERE u.id != $1
             AND u.location IS NOT NULL
+            -- Thêm điều kiện loại bỏ người dùng đã match
+            AND u.id NOT IN (SELECT matched_user_id FROM matched_users)
             -- Nới lỏng điều kiện về giới tính
             AND (
-               pref.preferred_gender = 'everyone' 
+               pref.preferred_gender = 'all'  
                OR u.gender = pref.preferred_gender 
                OR pref.preferred_gender IS NULL
             )
@@ -70,10 +82,13 @@ router.get('/matching-list-by-filters', async (req, res) => {
          SELECT 
             u.id,
             CASE 
-               WHEN (u.gender = COALESCE(
-                  (SELECT preferred_gender FROM user_prefs WHERE user_id = $1), 
-                  'everyone'
-               )) THEN 100
+               WHEN (
+                  u.gender = COALESCE(
+                     (SELECT preferred_gender FROM user_prefs WHERE user_id = $1), 
+                     'all'
+                  ) 
+                  OR (SELECT preferred_gender FROM user_prefs WHERE user_id = $1) = 'all'
+               ) THEN 100
                ELSE 0 
             END +
             CASE 
@@ -161,12 +176,11 @@ router.get('/matching-list-by-filters', async (req, res) => {
 
 router.post('/update-filters', async (req, res) => {
    const { filters, userId, isNewUser } = req.body
-
    let processedFilters
    if (isNewUser) {
       // Set default filters for new users
       processedFilters = {
-         gender: 'everyone',
+         gender: 'all',
          min_age: 18,
          max_age: 35,
          education_id: 26,
@@ -182,7 +196,7 @@ router.post('/update-filters', async (req, res) => {
 
       // Validate and process filter values
       processedFilters = {
-         gender: filters.gender || 'everyone',
+         gender: filters.gender || 'all',
          min_age: filters.age[0],
          max_age: filters.age[1],
          education_id: filters.education || null,

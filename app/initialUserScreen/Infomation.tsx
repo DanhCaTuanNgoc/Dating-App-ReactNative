@@ -98,7 +98,7 @@ function Infomation({ navigation }: { navigation: any }) {
                      styles.genderButton,
                      gender === 'male' && styles.selectedGender,
                   ]}
-                  onPress={() => setGender('male')}
+                  onPress={() => setGender('Male')}
                >
                   <Text
                      style={[
@@ -114,7 +114,7 @@ function Infomation({ navigation }: { navigation: any }) {
                      styles.genderButton,
                      gender === 'female' && styles.selectedGender,
                   ]}
-                  onPress={() => setGender('female')}
+                  onPress={() => setGender('Female')}
                >
                   <Text
                      style={[
