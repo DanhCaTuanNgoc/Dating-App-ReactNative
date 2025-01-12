@@ -30,6 +30,8 @@ import FilterModal from '@/components/FilterModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { MatchingSwiperRef } from '@/components/MatchingSwiper'
+import { chatService } from '@/backend/services/chatService'
+import { getAuth } from 'firebase/auth'
 
 import { API_BASE_URL } from '../../store/IPv4'
 import { addMatch } from '@/store/matching/matchReducer'
@@ -103,11 +105,17 @@ function People({ navigation }: { navigation: any }) {
 
          if (data.success) {
             if (data.matched && !data.message) {
+               const conversationId = await chatService.createConversation(
+                  userId,
+                  targetUser.id,
+               )
+
                setMatchedUser({
                   name: targetUser.name,
                   avatar_url: targetUser.photos?.[0]?.photo_url || '',
                   matched_at: new Date().toISOString(),
                })
+
                dispatch(
                   addMatch({
                      id: data.matchId,

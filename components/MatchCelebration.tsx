@@ -17,7 +17,6 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
    const scaleAnim = useRef(new Animated.Value(0.3)).current
    const confettiRef = useRef<any>(null)
    const textScaleAnim = useRef(new Animated.Value(0)).current
-   const textRotateAnim = useRef(new Animated.Value(0)).current
 
    useEffect(() => {
       if (visible) {
@@ -25,7 +24,6 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
          fadeAnim.setValue(0)
          scaleAnim.setValue(0.3)
          textScaleAnim.setValue(0)
-         textRotateAnim.setValue(0)
 
          // Sequence của animations
          Animated.sequence([
@@ -36,21 +34,13 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
                useNativeDriver: true,
             }),
 
-            // 2. Text animation với scale và rotate
-            Animated.parallel([
-               Animated.spring(textScaleAnim, {
-                  toValue: 1,
-                  friction: 8,
-                  tension: 40,
-                  useNativeDriver: true,
-               }),
-               Animated.spring(textRotateAnim, {
-                  toValue: 1,
-                  friction: 8,
-                  tension: 40,
-                  useNativeDriver: true,
-               }),
-            ]),
+            // 2. Text animation với scale spring effect
+            Animated.spring(textScaleAnim, {
+               toValue: 1,
+               friction: 8,
+               tension: 40,
+               useNativeDriver: true,
+            }),
          ]).start()
 
          // Trigger multiple confetti bursts
@@ -70,11 +60,6 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
       }
    }, [visible])
 
-   const spin = textRotateAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '360deg'],
-   })
-
    if (!visible) return null
 
    return (
@@ -83,7 +68,6 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
             colors={['rgba(0,0,0,0.95)', `${COLORS.primary}90`, 'rgba(0,0,0,0.95)']}
             style={styles.container}
          >
-            {/* Multiple confetti cannons for better effect */}
             <ConfettiCannon
                ref={confettiRef}
                count={100}
@@ -119,7 +103,7 @@ const MatchCelebration = ({ visible, onAnimationComplete }: MatchCelebrationProp
                   style={[
                      styles.matchText,
                      {
-                        transform: [{ scale: textScaleAnim }, { rotate: spin }],
+                        transform: [{ scale: textScaleAnim }],
                      },
                   ]}
                >

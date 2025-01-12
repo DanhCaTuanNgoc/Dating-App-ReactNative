@@ -6,6 +6,7 @@ import MatchingSwiper from './MatchingSwiper'
 import MatchingCardSkeleton from './MatchingCardSkeleton'
 import MatchModal from './MatchModal'
 import MatchCelebration from './MatchCelebration'
+import ChatRoom from './ChatRoom'
 export {
    AlertModal,
    GradientText,
@@ -15,4 +16,5 @@ export {
    MatchingCardSkeleton,
    MatchModal,
    MatchCelebration,
+   ChatRoom,
 }

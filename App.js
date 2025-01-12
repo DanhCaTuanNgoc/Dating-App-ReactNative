@@ -11,14 +11,15 @@ import {
    Interests,
    Pictures,
    People,
-   Chat,
    Profile,
    EditProfile,
    DevLogin,
    Setting,
    Photo,
    ProfileV2,
+   ChatList,
 } from './app/index'
+import { ChatRoom } from './components'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { Provider } from 'react-redux'
@@ -56,7 +57,7 @@ const HomeTab = ({ navigation }) => {
       >
          <Tab.Screen name="Profile" component={ProfileV2} />
          <Tab.Screen name="People" component={People} />
-         <Tab.Screen name="Chat" component={Chat} />
+         <Tab.Screen name="Chat" component={ChatList} />
       </Tab.Navigator>
    )
 }
@@ -85,6 +86,7 @@ function App() {
                   <Stack.Screen name="HomeTab" component={HomeTab} />
                   <Stack.Screen name="EditProfile" component={EditProfile} />
                   <Stack.Screen name="Setting" component={Setting} />
+                  <Stack.Screen name="ChatRoom" component={ChatRoom} />
                </Stack.Navigator>
             </NavigationContainer>
          </SafeAreaProvider>
