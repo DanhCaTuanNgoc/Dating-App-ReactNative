@@ -76,7 +76,7 @@ const MatchingSwiper = forwardRef<MatchingSwiperRef, MatchingSwiperProps>(
 
 const styles = StyleSheet.create({
    swiper: {
-      height: '52%',
+      height: '100%',
       width: '92%',
    },
    overlayLabel: {

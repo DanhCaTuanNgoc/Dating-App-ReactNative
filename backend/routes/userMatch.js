@@ -176,6 +176,7 @@ router.get('/matching-list-by-filters', async (req, res) => {
 
 router.post('/update-filters', async (req, res) => {
    const { filters, userId, isNewUser } = req.body
+   console.log('DB :' + filters)
    let processedFilters
    if (isNewUser) {
       // Set default filters for new users

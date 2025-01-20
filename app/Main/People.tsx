@@ -17,7 +17,6 @@ import {
    UpdateUserFilters,
    getMatchingListByFilters,
 } from '../../store/matching/matchAction'
-import { updateFiltersReducer, setMatchingList } from '@/store/matching/matchReducer'
 import { useLocation } from '../../hooks/useLocation'
 import {
    MatchingCard,
@@ -28,13 +27,12 @@ import {
 } from '@/components'
 import FilterModal from '@/components/FilterModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { MatchingSwiperRef } from '@/components/MatchingSwiper'
 import { chatService } from '@/backend/services/chatService'
-import { getAuth } from 'firebase/auth'
 
 import { API_BASE_URL } from '../../store/IPv4'
 import { addMatch } from '@/store/matching/matchReducer'
+
 
 function People({ navigation }: { navigation: any }) {
    const { errorMsg, newLocation, requestLocationPermission } = useLocation()
@@ -42,41 +40,52 @@ function People({ navigation }: { navigation: any }) {
    const { matchingList, defaultFilters } = useSelector((state: any) => state.matchState)
    const [isFilterVisible, setIsFilterVisible] = useState(false)
    const swiperRef = useRef<MatchingSwiperRef>(null)
-   const [number, setNumber] = useState(0)
+   const [number, setNumber] = useState(matchingList.length)
    const [isLoading, setIsLoading] = useState(true)
-   const [isLastCardSwiped, setIsLastCardSwiped] = useState(false)
    const [matchedUser, setMatchedUser] = useState<any>(null)
    const [showMatchCelebration, setShowMatchCelebration] = useState(false)
    const dispatch = useDispatch()
 
-   const loadMatchingListByFilters = async () => {
+   // Tải danh sách đối tượng hẹn hò
+   const loadMatchingListByFilters = useCallback(async () => {
       try {
          setIsLoading(true)
-         let isNewUser = false
-         await UpdateUserFilters(defaultFilters, userId, isNewUser)(dispatch)
          await getMatchingListByFilters(userId)(dispatch)
       } catch (err) {
          console.error('Error in loadMatchingListByFilters:', err)
       } finally {
          setIsLoading(false)
       }
-   }
+   }, [userId, dispatch])
 
+   // Kiểm tra vị trí của người dùng
    useEffect(() => {
-      if (userInfo.location) {
-         loadMatchingListByFilters()
+      const initializeApp = async () => {
+         try {
+            if (userInfo?.location) {
+               await loadMatchingListByFilters()
+            }
+         } catch (error) {
+            console.error('Error in initialization:', error)
+         }
       }
-   }, [userInfo])
+      initializeApp()
+   }, [userInfo?.location])
 
+   // Cập nhật số lượng người dùng trong danh sách
    useEffect(() => {
-      if (matchingList) {
+      if (matchingList?.length) {
          setNumber(matchingList.length)
+      } else {
+         setNumber(0)
       }
    }, [matchingList])
 
+   // Xử lý khi người dùng swipe right
    const handleSwipedRight = async (index: number) => {
       try {
          const targetUser = matchingList[index]
+         setNumber(number - 1)
          const response = await fetch(`${API_BASE_URL}/userMatch/action`, {
             method: 'POST',
             headers: {
@@ -127,54 +136,33 @@ function People({ navigation }: { navigation: any }) {
       }
    }
 
-   const handleSwipedLeft = useCallback(
-      (cardIndex: number) => {
-         try {
-            const swipedUser = matchingList[cardIndex]
-            console.log('Disliked user:', swipedUser.id)
-
-            if (cardIndex === matchingList.length - 1) {
-               setIsLastCardSwiped(true)
-            }
-            setNumber((prev) => prev - 1)
-         } catch (error) {
-            console.error('Error disliking user:', error)
-         }
-      },
-      [matchingList],
-   )
-
-   const calculateAge = useCallback((birthDate: string) => {
-      if (!birthDate) return null
-      const today = new Date()
-      const birth = new Date(birthDate)
-      let age = today.getFullYear() - birth.getFullYear()
-      const monthDiff = today.getMonth() - birth.getMonth()
-
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-         age--
+   // Xử lý khi người dùng swipe left
+   const handleSwipedLeft = (cardIndex: number) => {
+      try {
+         const swipedUser = matchingList[cardIndex]
+         console.log('Disliked user:', swipedUser.id) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         setNumber(number - 1)
+      } catch (error) {
+         console.error('Error disliking user:', error)
       }
-      return age
+   }
+
+   const renderCard = useCallback((user: any, cardIndex: number) => {
+      return <MatchingCard user={user} />
    }, [])
 
-   const renderCard = useCallback(
-      (user: any, cardIndex: number) => {
-         return <MatchingCard user={user} calculateAge={calculateAge} />
-      },
-      [calculateAge],
-   )
-
+   // Xử lý khi người dùng áp dụng các bộ lọc
    const handleApplyFilters = async (filters: any) => {
       try {
          let isNewUser = false
          await UpdateUserFilters(filters, userId, isNewUser)(dispatch)
-         console.log(filters)
          loadMatchingListByFilters()
       } catch (err) {
          console.log(err)
       }
    }
 
+   // Xử lý khi người dùng thêm vị trí
    const handleAddLocation = async () => {
       try {
          await requestLocationPermission()
@@ -182,6 +170,33 @@ function People({ navigation }: { navigation: any }) {
       } catch (error) {
          console.error('Error in handleAddLocation:', error)
       }
+   }
+
+   // Render các nút hành động
+   const renderActionButtons = () => {
+      return (
+         <View style={styles.actionButtons}>
+            <TouchableOpacity
+               style={{ ...styles.actionButton, ...styles.dislikeButton }}
+               onPress={() => {
+                  swiperRef.current?.swipeLeft()
+               }}
+            >
+               <Ionicons name="close" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ ...styles.actionButton, ...styles.starButton }}>
+               <Ionicons name="star" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+            <TouchableOpacity
+               style={{ ...styles.actionButton, ...styles.likeButton }}
+               onPress={() => {
+                  swiperRef.current?.swipeRight()
+               }}
+            >
+               <Ionicons name="heart" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+         </View>
+      )
    }
 
    return (
@@ -207,7 +222,7 @@ function People({ navigation }: { navigation: any }) {
                   <Text style={styles.locationButtonText}>Try Again</Text>
                </TouchableOpacity>
             </View>
-         ) : !userInfo.location ? (
+         ) : !userInfo?.location ? (
             <View style={styles.noLocationContainer}>
                <Image
                   source={require('../../assets/images/no-location.png')}
@@ -232,7 +247,7 @@ function People({ navigation }: { navigation: any }) {
                   <Text style={styles.loadingText}>Finding people...</Text>
                </View>
             </View>
-         ) : matchingList && number > 0 ? (
+         ) : matchingList && number >= 1 ? (
             <Fragment>
                <View style={styles.swiperContainer}>
                   <MatchingSwiper
@@ -243,31 +258,7 @@ function People({ navigation }: { navigation: any }) {
                      ref={swiperRef}
                   />
                </View>
-               <View style={styles.actionButtons}>
-                  <TouchableOpacity
-                     style={{ ...styles.actionButton, ...styles.dislikeButton }}
-                     onPress={() => {
-                        swiperRef.current?.swipeLeft()
-                        setNumber(number - 1)
-                     }}
-                  >
-                     <Ionicons name="close" size={24} color={COLORS.white} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                     style={{ ...styles.actionButton, ...styles.starButton }}
-                  >
-                     <Ionicons name="star" size={24} color={COLORS.white} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                     style={{ ...styles.actionButton, ...styles.likeButton }}
-                     onPress={() => {
-                        swiperRef.current?.swipeRight()
-                        setNumber(number - 1)
-                     }}
-                  >
-                     <Ionicons name="heart" size={24} color={COLORS.white} />
-                  </TouchableOpacity>
-               </View>
+               {renderActionButtons()}
             </Fragment>
          ) : (
             <View style={styles.noUsersContainer}>
@@ -275,7 +266,7 @@ function People({ navigation }: { navigation: any }) {
                   source={require('../../assets/images/usernotfound.jpg')}
                   style={styles.noUsersImage}
                />
-               <Text style={styles.noUsersText}>No users found</Text>
+               <Text style={styles.noUsersText}>No user found</Text>
             </View>
          )}
 
@@ -291,6 +282,7 @@ function People({ navigation }: { navigation: any }) {
                setShowMatchCelebration(false)
             }}
          />
+         
       </SafeAreaView>
    )
 }
@@ -384,7 +376,7 @@ const styles = StyleSheet.create({
       height: 'auto',
       padding: SIZES.medium,
       gap: SIZES.large,
-      zIndex: 999, // Đảm bảo nút luôn ở trên cùng
+      zIndex: 999,
    },
    actionButton: {
       width: 65,
@@ -413,6 +405,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'column',
       width: '100%',
+      height: '100%',
       marginTop: SIZES.medium,
    },
    overlayLabel: {

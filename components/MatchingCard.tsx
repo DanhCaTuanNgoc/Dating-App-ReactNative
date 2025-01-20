@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Dimensions, Platform } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SIZES } from '../constants/theme'
+import { useAge } from '../hooks/useAge'
 
 interface matchingCardProps {
    user: {
@@ -12,13 +13,12 @@ interface matchingCardProps {
       photo_url: string
       distance: number
    }
-   calculateAge: (birthDate: string) => number | null
 }
 
-const MatchingCard = ({ user, calculateAge }: matchingCardProps) => {
+const MatchingCard = ({ user }: matchingCardProps) => {
    if (!user) return null
 
-   const age = calculateAge(user.birth_date)
+    const age = useAge(user.birth_date)
 
    return (
       <View style={styles.cardContainer}>
@@ -29,7 +29,8 @@ const MatchingCard = ({ user, calculateAge }: matchingCardProps) => {
             style={styles.cardInfo}
          >
             <Text style={styles.userName}>
-               {user.name}, {age}
+               {user.name}
+               {age ? `, ${age}` : ''}
             </Text>
             <Text style={styles.userBio}>{user.bio || 'No bio yet'}</Text>
             <View style={styles.locationContainer}>

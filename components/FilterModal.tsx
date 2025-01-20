@@ -40,6 +40,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
    const dispatch: any = useDispatch()
    const [education, setEducation] = useState<number | null>(null)
    const [relationshipGoal, setRelationshipGoal] = useState<number | null>(null)
+   const userId = useSelector((state: any) => state.userState.userId)
    const { filtersReducer } = useSelector((state: any) => state.matchState)
 
    const interests: object[] = [
@@ -112,16 +113,18 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
       } else {
          closeAnim.start()
       }
+      dispatch(getUserFilters(userId))
       dispatch(getEducationAndRelationship())
       if (filtersReducer) {
-         setAge(filtersReducer.age)
-         setDistance(filtersReducer.distance)
-         setGender(filtersReducer.gender)
-         setEducation(filtersReducer.education)
-         setRelationshipGoal(filtersReducer.relationshipGoal)
-         setSelectedInterests(filtersReducer.selectedInterests)
+         setAge([filtersReducer.min_age, filtersReducer.max_age])
+         setDistance(filtersReducer.max_distance)
+         setGender(filtersReducer.preferred_gender)
+         setEducation(filtersReducer.education_id)
+         setRelationshipGoal(filtersReducer.relationship_goal_id)
+         setSelectedInterests(filtersReducer.preferred_interests)
       }
-   }, [visible])
+      console.log(selectedInterests)
+   }, [visible, userId])
 
    const handleApply = () => {
       const processedFilters = {
@@ -343,7 +346,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  style={[
                                     styles.interestItem,
                                     selectedInterests.find(
-                                       (item: any) => item === interest.id,
+                                       (item: any) => item == interest.id,
                                     ) && styles.selectedInterest,
                                  ]}
                                  onPress={() => toggleInterest(interest)}

@@ -81,7 +81,7 @@ export default function ChatList({ navigation }: { navigation: any }) {
       if (isLoading) {
          return (
             <FlatList
-               data={[1, 2, 3, 4, 5]} // Số lượng skeleton items
+               data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} // Số lượng skeleton items
                renderItem={() => <ChatListItemSkeleton />}
                keyExtractor={(item) => item.toString()}
             />

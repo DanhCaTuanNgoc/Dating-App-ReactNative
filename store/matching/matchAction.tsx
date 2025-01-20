@@ -63,6 +63,7 @@ export const UpdateUserFilters =
          if (!response.ok) {
             throw new Error(data.error || 'Failed to add user filters')
          }
+         console.log(data)
          dispatch(updateFiltersReducer(filters))
          return data
       } catch (error) {

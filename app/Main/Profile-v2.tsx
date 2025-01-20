@@ -26,7 +26,8 @@ function ProfileV2({ navigation }: { navigation: any }) {
       education,
       relationship,
    } = useSelector((state: any) => state.userState)
-   const age = useAge(userInfo.birth_date)
+   
+   const age = useAge(userInfo?.birth_date)
 
    return (
       <View style={styles.container}>
@@ -62,7 +63,8 @@ function ProfileV2({ navigation }: { navigation: any }) {
                   </BlurView>
                </View>
                <Text style={styles.userName}>
-                  {userInfo.name}, {age}
+                  {userInfo.name}
+                  {age ? `, ${age}` : ''}
                </Text>
             </View>
          </LinearGradient>
