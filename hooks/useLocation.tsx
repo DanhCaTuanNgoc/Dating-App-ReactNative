@@ -54,7 +54,6 @@ export const useLocation = () => {
             timeInterval: 5000,
             distanceInterval: 10,
          })
-
          setNewLocation(location)
          await updateUserLocation(userId, location)(dispatch)
          await getUserInfo(userId)(dispatch)

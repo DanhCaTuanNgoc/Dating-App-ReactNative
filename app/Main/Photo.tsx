@@ -8,7 +8,7 @@ import {
    ScrollView,
    Platform,
 } from 'react-native'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import * as ImageManipulator from 'expo-image-manipulator'
 import { useSelector, useDispatch } from 'react-redux'
@@ -18,20 +18,20 @@ import { COLORS } from '@/constants/theme'
 import { deletePhoto, uploadImage, setPhotoAsPrimary } from '@/store/user/userAction'
 import { LinearGradient } from 'expo-linear-gradient'
 import ShowImageModal from '@/components/ShowImageModal'
-
+import AlertModal from '@/components/AlertModal'
 function ManagePhotos({ navigation }: any) {
    const { userPhotos, userId } = useSelector((state: any) => state.userState)
    const dispatch: any = useDispatch()
    const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
    const [isImageViewVisible, setIsImageViewVisible] = useState(false)
+   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false)
+   const [isAlertModalVisible2, setIsAlertModalVisible2] = useState(false)
+   const [isAlertModalVisible3, setIsAlertModalVisible3] = useState(false)
+
+
 
    const pickImage = async () => {
       try {
-         if (userPhotos.length >= 6) {
-            Alert.alert('Error', 'Maximum 6 photos allowed')
-            return
-         }
-
          const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -48,10 +48,7 @@ function ManagePhotos({ navigation }: any) {
 
             if (manipulatedImage.base64) {
                if (manipulatedImage.base64.length > 10000000) {
-                  Alert.alert(
-                     'Error',
-                     'Image size too large. Please choose a smaller image.',
-                  )
+                  setIsAlertModalVisible(true)
                   return
                }
                await uploadImage(userId, manipulatedImage.base64, false)(dispatch)
@@ -63,10 +60,14 @@ function ManagePhotos({ navigation }: any) {
       }
    }
 
-   const handleDeletePhoto = async (photoId: string) => {
+   const handleDeletePhoto = async (photoId: string, isPrimary: boolean) => {
       try {
-         if (userPhotos.length <= 4) {
-            Alert.alert('Error', 'Minimum 4 photos required')
+         if (userPhotos.length <= 1) {
+            setIsAlertModalVisible2(true)
+            return
+         }
+         if (isPrimary) {
+            setIsAlertModalVisible3(true)
             return
          }
          await deletePhoto(photoId, userId, selectedPhoto?.cloudinary_id || '')(dispatch)
@@ -91,7 +92,7 @@ function ManagePhotos({ navigation }: any) {
       setIsImageViewVisible(true)
    }
 
-   const renderImageSlots = () => {
+   const renderImageSlots = useCallback(() => {
       const slots = []
       for (let i = 0; i < 6; i++) {
          if (i < userPhotos.length) {
@@ -110,7 +111,7 @@ function ManagePhotos({ navigation }: any) {
                      <View style={styles.photoActions}>
                         <TouchableOpacity
                            style={[styles.actionButton, styles.deleteButton]}
-                           onPress={() => handleDeletePhoto(photo.id)}
+                           onPress={() => handleDeletePhoto(photo.id, photo.is_primary)}
                         >
                            <Ionicons name="trash" size={20} color={COLORS.white} />
                         </TouchableOpacity>
@@ -144,7 +145,7 @@ function ManagePhotos({ navigation }: any) {
          }
       }
       return slots
-   }
+   }, [userPhotos])
 
    return (
       <View style={styles.container}>
@@ -236,6 +237,34 @@ function ManagePhotos({ navigation }: any) {
                onDelete={handleDeletePhoto}
                onSetAsPrimary={handleSetPrimary}
                cloudinaryId={selectedPhoto?.cloudinary_id || ''}
+               isPrimary={selectedPhoto?.is_primary || false}
+            />
+
+            <AlertModal
+               visible={isAlertModalVisible}
+               title="Error"
+               message="Image size too large. Please choose a smaller image."
+               iconName="alert-circle"
+               color={COLORS.alertFail}
+               onClose={() => setIsAlertModalVisible(false)}
+            />
+
+            <AlertModal
+               visible={isAlertModalVisible2}
+               title="Sorry"
+               message="Minimum 1 photo required"
+               iconName="alert-circle"
+               color={COLORS.alertFail}
+               onClose={() => setIsAlertModalVisible2(false)}
+            />
+
+            <AlertModal
+               visible={isAlertModalVisible3}
+               title="Sorry"
+               message="You cannot delete primary photo, change another photo as primary first"
+               iconName="alert-circle"
+               color={COLORS.alertFail}
+               onClose={() => setIsAlertModalVisible3(false)}
             />
          </View>
       </View>
@@ -388,7 +417,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderRadius: 16,
       borderWidth: 2,
-      borderColor: COLORS.primary + '50',
+      borderColor: COLORS.primary,
       borderStyle: 'dashed',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },

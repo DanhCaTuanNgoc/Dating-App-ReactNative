@@ -1,6 +1,5 @@
 import Login from './Login'
 import Register from './Register'
-import Home from './Main/Home'
 import PhoneLogin from './initialUserScreen/PhoneLogin'
 import VerifyPhoneNumber from './initialUserScreen/VerifyPhoneNumber'
 import Infomation from './initialUserScreen/Infomation'
@@ -14,10 +13,11 @@ import DevLogin from './initialUserScreen/DevLogin'
 import Setting from './Main/Setting'
 import Photo from './Main/Photo'
 import ChatList from './Main/ChatList'
+import Authenticate from './Main/Authenticate'
+
 export {
    Login,
    Register,
-   Home,
    PhoneLogin,
    VerifyPhoneNumber,
    Infomation,
@@ -31,4 +31,5 @@ export {
    Setting,
    Photo,
    ChatList,
+   Authenticate,
 }

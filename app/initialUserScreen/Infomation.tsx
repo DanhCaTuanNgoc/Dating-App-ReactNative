@@ -1,4 +1,12 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import {
+   View,
+   Text,
+   TextInput,
+   TouchableOpacity,
+   StyleSheet,
+   Alert,
+   Platform,
+} from 'react-native'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -16,13 +24,20 @@ function Infomation({ navigation }: { navigation: any }) {
    const dispatch: any = useDispatch()
    const { userId } = useSelector((state: any) => state.userState)
    const [showAlert, setShowAlert] = useState(false)
+   const [showDatePicker, setShowDatePicker] = useState(false)
+
    const handleDateChange = (event: any, selectedDate?: Date) => {
+      if (Platform.OS === 'android') {
+         setShowDatePicker(false)
+      }
+
       if (selectedDate) {
          setBirthDate(selectedDate)
       }
    }
 
    const handleContinue = async () => {
+      console.log(name, gender, birthDate)
       if (
          name.trim() !== '' &&
          gender.trim() !== '' &&
@@ -75,21 +90,56 @@ function Infomation({ navigation }: { navigation: any }) {
             />
 
             <View style={styles.dateInputContainer}>
-               <TextInput
-                  style={styles.dateInput}
-                  value={formatDate(birthDate)}
-                  placeholder="Select your birth date"
-                  placeholderTextColor="#999"
-                  editable={false}
-               />
-               <DateTimePicker
-                  style={styles.calendarButton}
-                  value={birthDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
-                  maximumDate={new Date()}
-               />
+               {Platform.OS === 'ios' ? (
+                  <>
+                     <TextInput
+                        style={styles.dateInput}
+                        value={formatDate(birthDate)}
+                        editable={false}
+                        placeholder="DD/MM/YYYY"
+                        placeholderTextColor="#999"
+                     />
+                     <DateTimePicker
+                        value={birthDate}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
+                        maximumDate={new Date()}
+                        style={styles.iosDatePicker}
+                        themeVariant="light"
+                     />
+                  </>
+               ) : (
+                  <>
+                     <TextInput
+                        style={styles.dateInput}
+                        value={formatDate(birthDate)}
+                        editable={false}
+                        placeholder="DD/MM/YYYY"
+                        placeholderTextColor="#999"
+                     />
+                     <TouchableOpacity
+                        style={styles.dateButton}
+                        onPress={() => setShowDatePicker(true)}
+                     >
+                        <Ionicons
+                           name="calendar-outline"
+                           size={24}
+                           color={COLORS.tertiary}
+                        />
+                     </TouchableOpacity>
+
+                     {showDatePicker && (
+                        <DateTimePicker
+                           value={birthDate}
+                           mode="date"
+                           display="default"
+                           onChange={handleDateChange}
+                           maximumDate={new Date()}
+                        />
+                     )}
+                  </>
+               )}
             </View>
 
             <View style={styles.genderContainer}>
@@ -98,7 +148,7 @@ function Infomation({ navigation }: { navigation: any }) {
                      styles.genderButton,
                      gender === 'male' && styles.selectedGender,
                   ]}
-                  onPress={() => setGender('Male')}
+                  onPress={() => setGender('male')}
                >
                   <Text
                      style={[
@@ -114,7 +164,7 @@ function Infomation({ navigation }: { navigation: any }) {
                      styles.genderButton,
                      gender === 'female' && styles.selectedGender,
                   ]}
-                  onPress={() => setGender('Female')}
+                  onPress={() => setGender('female')}
                >
                   <Text
                      style={[
@@ -129,9 +179,6 @@ function Infomation({ navigation }: { navigation: any }) {
 
             <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
                <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Interests')}>
-               <Text>Skip</Text>
             </TouchableOpacity>
          </View>
          <AlertModal
@@ -149,7 +196,7 @@ function Infomation({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: COLORS.backgroundContent,
+      backgroundColor: COLORS.white,
       paddingHorizontal: 24,
       paddingVertical: 20,
    },
@@ -160,7 +207,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: COLORS.backgroundButton,
+      backgroundColor: COLORS.primary,
    },
    header: {
       marginBottom: 30,
@@ -224,15 +271,21 @@ const styles = StyleSheet.create({
       width: '48%',
       height: 50,
       borderWidth: 1,
-      borderColor: '#FFE4B5',
+      borderColor: COLORS.border,
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: COLORS.white,
    },
    selectedGender: {
-      backgroundColor: COLORS.backgroundButton,
-      borderColor: COLORS.backgroundButton,
+      width: '48%',
+      height: 50,
+      borderWidth: 1,
+      borderColor: COLORS.primary,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: COLORS.white,
    },
    genderText: {
       fontSize: 16,
@@ -240,18 +293,18 @@ const styles = StyleSheet.create({
       color: COLORS.textColor,
    },
    selectedGenderText: {
-      color: COLORS.white,
+      color: COLORS.textColor,
       fontSize: 16,
       fontWeight: '700',
    },
    continueButton: {
       width: '100%',
       height: 50,
-      backgroundColor: COLORS.backgroundButton,
+      backgroundColor: COLORS.primary,
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
-      shadowColor: COLORS.backgroundButton,
+      shadowColor: COLORS.primary,
       shadowOffset: {
          width: 0,
          height: 4,
@@ -264,6 +317,18 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontSize: 16,
       fontWeight: '600',
+   },
+   dateButton: {
+      padding: 10,
+      position: 'absolute',
+      right: 10,
+   },
+   iosDatePicker: {
+      position: 'absolute',
+      right: 10,
+      width: '100%',
+      height: 120,
+      marginTop: 10,
    },
 })
 

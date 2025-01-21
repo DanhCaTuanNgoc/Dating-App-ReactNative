@@ -295,7 +295,6 @@ export const updateUserInfo =
          if (!response.ok) {
             throw new Error(data.error || 'Failed to update user info')
          }
-         await dispatch(setUserInfo(data))
          return data
       } catch (error) {
          console.error('Error updating user info:', error)

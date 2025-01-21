@@ -126,7 +126,6 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
          setRelationshipGoal(filtersReducer.relationship_goal_id)
          setSelectedInterests(filtersReducer.preferred_interests)
       }
-      console.log(selectedInterests)
    }, [visible, userId])
 
    const handleApply = () => {
@@ -380,7 +379,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  key={interest.id}
                                  style={[
                                     styles.interestItem,
-                                    selectedInterests.find(
+                                    selectedInterests?.find(
                                        (item: any) => item == interest.id,
                                     ) && styles.selectedInterest,
                                  ]}
@@ -390,7 +389,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                     name={interest.icon}
                                     size={20}
                                     color={
-                                       selectedInterests.find(
+                                       selectedInterests?.find(
                                           (item: any) => item == interest.id,
                                        )
                                           ? COLORS.textColor
@@ -401,7 +400,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                                  <Text
                                     style={[
                                        styles.interestText,
-                                       selectedInterests.find(
+                                       selectedInterests?.find(
                                           (item: any) => item == interest.id,
                                        ) && styles.selectedInterestText,
                                     ]}

@@ -3,7 +3,7 @@ export const COLORS = {
    secondary: '#ea80fc',
    tertiary: '#7827e6',
    lightPurple: '#c098e8',
-   
+
    // Additional shades
    lightYellow: '#FFE169',
    paleOrange: '#FFBB5C',
@@ -19,7 +19,7 @@ export const COLORS = {
    textColor: '#333',
 
    //Alert colors
-   alertSuccess: '#228B22',
+   alertSuccess: '#228B25',
    alertFail: '#FF0000',
 
    //Card

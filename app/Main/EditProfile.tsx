@@ -9,12 +9,18 @@ import {
    Platform,
    Alert,
 } from 'react-native'
+
 import { COLORS, SIZES } from '../../constants/theme'
 import { Ionicons } from '@expo/vector-icons'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getEducationAndRelationship, updateUserInfo } from '../../store/user/userAction'
+import {
+   getEducationAndRelationship,
+   updateUserInfo,
+   getUserInfo,
+} from '../../store/user/userAction'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import AlertModal from '@/components/AlertModal'
 
 function EditProfile({ navigation }: { navigation: any }) {
    const {
@@ -23,7 +29,6 @@ function EditProfile({ navigation }: { navigation: any }) {
       userInfo,
       userId,
    } = useSelector((state: any) => state.userState)
-
 
    const [name, setName] = useState(userInfo?.name)
    const [bio, setBio] = useState(userInfo?.bio)
@@ -35,6 +40,7 @@ function EditProfile({ navigation }: { navigation: any }) {
    const [birthDate, setBirthDate] = useState(new Date(userInfo?.birth_date))
    const [showDatePicker, setShowDatePicker] = useState(false)
    const [gender, setGender] = useState(userInfo?.gender)
+   const [popup, setPopup] = useState(false)
    const dispatch: any = useDispatch()
 
    const genderOptions = [
@@ -48,15 +54,18 @@ function EditProfile({ navigation }: { navigation: any }) {
       dispatch(getEducationAndRelationship())
    }, [])
 
-   const formatDate = (date: Date) => {
-      return date.toLocaleDateString('en-GB', {
-         day: '2-digit',
-         month: '2-digit',
-         year: 'numeric',
-      })
-   }
+   const formatDate = useCallback(
+      (date: Date) => {
+         return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+         })
+      },
+      [birthDate],
+   )
 
-   const handleDateChange = (event: any, selectedDate?: Date) => {
+   const handleDateChange = useCallback((event: any, selectedDate?: Date) => {
       if (Platform.OS === 'android') {
          setShowDatePicker(false)
       }
@@ -64,20 +73,10 @@ function EditProfile({ navigation }: { navigation: any }) {
       if (selectedDate) {
          setBirthDate(selectedDate)
       }
-   }
+   }, [])
 
    const handleSave = async () => {
       try {
-         console.log(
-            userId,
-            name,
-            birthDate,
-            gender,
-            bio,
-            education,
-            occupation,
-            relationshipGoal,
-         )
          await dispatch(
             updateUserInfo(
                userId,
@@ -90,8 +89,8 @@ function EditProfile({ navigation }: { navigation: any }) {
                relationshipGoal,
             ),
          )
-         navigation.goBack()
-         Alert.alert('Success', 'User info updated successfully')
+         await dispatch(getUserInfo(userId))
+         setPopup(true)
       } catch (error) {
          console.error('Error saving user info:', error)
       }
@@ -134,6 +133,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                   placeholderTextColor={'#999'}
                   multiline
                   numberOfLines={4}
+                  maxLength={60}
                />
             </View>
 
@@ -151,7 +151,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                <Text style={styles.label}>Birth date</Text>
                <View style={styles.dateInputContainer}>
                   {Platform.OS === 'ios' ? (
-                     <>
+                     <Fragment>
                         <TextInput
                            style={styles.dateInput}
                            value={formatDate(birthDate)}
@@ -168,9 +168,9 @@ function EditProfile({ navigation }: { navigation: any }) {
                            style={styles.iosDatePicker}
                            themeVariant="light"
                         />
-                     </>
+                     </Fragment>
                   ) : (
-                     <>
+                     <Fragment>
                         <TextInput
                            style={styles.dateInput}
                            value={formatDate(birthDate)}
@@ -198,7 +198,7 @@ function EditProfile({ navigation }: { navigation: any }) {
                               maximumDate={new Date()}
                            />
                         )}
-                     </>
+                     </Fragment>
                   )}
                </View>
             </View>
@@ -282,6 +282,15 @@ function EditProfile({ navigation }: { navigation: any }) {
                </View>
             </View>
          </ScrollView>
+
+         <AlertModal
+            visible={popup}
+            onClose={() => setPopup(false)}
+            title="Success"
+            message="User info updated successfully"
+            iconName="checkmark-circle"
+            color={COLORS.alertSuccess}
+         />
       </KeyboardAvoidingView>
    )
 }

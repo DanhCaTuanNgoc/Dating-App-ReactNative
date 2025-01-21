@@ -28,15 +28,23 @@ router.get('/matching-list-by-filters', async (req, res) => {
       WITH user_prefs AS (
          SELECT * FROM user_preferences WHERE user_id = $1
       ),
+      disliked_users AS (
+         -- Lấy danh sách user_id đã dislike
+         SELECT target_user_id
+         FROM match_history
+         WHERE user_id = $1 AND action = 'dislike'
+      ),
       matched_users AS (
-         -- Lấy danh sách user_id đã match
+         -- Lấy danh sách user_id đã match hoặc đã dislike
          SELECT 
             CASE 
                WHEN user_id_1 = $1 THEN user_id_2
                ELSE user_id_1
             END as matched_user_id
          FROM matches 
-         WHERE user_id_1 = $1 OR user_id_2 = $1
+         WHERE (user_id_1 = $1 OR user_id_2 = $1)
+         UNION
+         SELECT target_user_id FROM disliked_users
       ),
       filtered_users AS (
          SELECT u.* 
@@ -44,7 +52,7 @@ router.get('/matching-list-by-filters', async (req, res) => {
          CROSS JOIN user_prefs pref
          WHERE u.id != $1
             AND u.location IS NOT NULL
-            -- Thêm điều kiện loại bỏ người dùng đã match
+            -- Loại bỏ người dùng đã match hoặc dislike
             AND u.id NOT IN (SELECT matched_user_id FROM matched_users)
             -- Nới lỏng điều kiện về giới tính
             AND (

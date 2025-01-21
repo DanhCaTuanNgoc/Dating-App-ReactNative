@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {
    Login,
    Register,
-   Home,
    PhoneLogin,
    VerifyPhoneNumber,
    Infomation,
@@ -18,17 +17,16 @@ import {
    Photo,
    ProfileV2,
    ChatList,
+   Authenticate,
 } from './app/index'
 import { ChatRoom } from './components'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider } from 'react-redux'
 import { store } from './store/store'
 import { Ionicons } from '@expo/vector-icons'
-import { StatusBar } from 'expo-status-bar'
 import './backend/services/firebase'
-import { Route } from 'expo-router/build/Route'
 import { COLORS } from './constants/theme'
+import { StatusBar } from 'react-native'
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
@@ -66,7 +64,11 @@ function App() {
    return (
       <Provider store={store}>
          <SafeAreaProvider>
-            <StatusBar style="dark" />
+            <StatusBar
+               backgroundColor="black"
+               barStyle="dark-content"
+               translucent={false}
+            />
             <NavigationContainer>
                <Stack.Navigator
                   screenOptions={{
@@ -87,6 +89,7 @@ function App() {
                   <Stack.Screen name="EditProfile" component={EditProfile} />
                   <Stack.Screen name="Setting" component={Setting} />
                   <Stack.Screen name="ChatRoom" component={ChatRoom} />
+                  <Stack.Screen name="Authenticate" component={Authenticate} />
                </Stack.Navigator>
             </NavigationContainer>
          </SafeAreaProvider>

@@ -103,7 +103,7 @@ function Pictures({ navigation }: any) {
          } else {
             slots.push(
                <TouchableOpacity key={i} style={styles.addButton} onPress={pickImage}>
-                  <Ionicons name="add" size={32} color={COLORS.backgroundButton} />
+                  <Ionicons name="add" size={32} color={COLORS.primary} />
                </TouchableOpacity>,
             )
          }
@@ -128,11 +128,7 @@ function Pictures({ navigation }: any) {
                <View style={styles.footerContent}>
                   <TouchableOpacity style={styles.photoTipsButton}>
                      <View style={styles.iconContainer}>
-                        <Ionicons
-                           name="camera"
-                           size={24}
-                           color={COLORS.backgroundButton}
-                        />
+                        <Ionicons name="camera" size={24} color={COLORS.primary} />
                      </View>
                      <View style={styles.tipsTextContainer}>
                         <Text style={styles.tipsText}>
@@ -160,7 +156,7 @@ function Pictures({ navigation }: any) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: COLORS.backgroundContent,
+      backgroundColor: COLORS.white,
       paddingHorizontal: 20,
       paddingVertical: 50,
    },
@@ -226,7 +222,7 @@ const styles = StyleSheet.create({
       borderRadius: 16,
       marginBottom: 15,
       borderWidth: 2,
-      borderColor: COLORS.backgroundButton,
+      borderColor: COLORS.tertiary,
       borderStyle: 'dashed',
    },
    footer: {
@@ -274,10 +270,10 @@ const styles = StyleSheet.create({
    tipsLink: {
       fontSize: 14,
       fontWeight: 'bold',
-      color: COLORS.backgroundButton,
+      color: COLORS.primary,
    },
    nextButton: {
-      backgroundColor: COLORS.backgroundButton,
+      backgroundColor: COLORS.primary,
       width: 56,
       height: 56,
       borderRadius: 28,

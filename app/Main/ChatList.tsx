@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import {
+   View,
+   FlatList,
+   StyleSheet,
+   TextInput,
+   TouchableOpacity,
+   Text,
+} from 'react-native'
 import { chatService } from '@/backend/services/chatService'
 import ChatListItem from '@/components/ChatListItem'
 import ChatListItemSkeleton from '@/components/ChatListItemSkeleton'
@@ -100,8 +107,11 @@ export default function ChatList({ navigation }: { navigation: any }) {
    }
 
    return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
          <View style={styles.searchContainer}>
+            <View style={styles.header}>
+               <Text style={styles.headerTitle}>Messages</Text>
+            </View>
             <View style={styles.searchWrapper}>
                <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
                <TextInput
@@ -122,8 +132,14 @@ export default function ChatList({ navigation }: { navigation: any }) {
             </View>
          </View>
 
-         {renderContent()}
-      </SafeAreaView>
+         {conversations.length === 0 ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+               <Text style={{ fontSize: 16, color: '#666' }}>Trống</Text>
+            </View>
+         ) : (
+            renderContent()
+         )}
+      </View>
    )
 }
 
@@ -131,12 +147,25 @@ const styles = StyleSheet.create({
    container: {
       flex: 1,
       backgroundColor: '#fff',
+      paddingTop: 30,
    },
    searchContainer: {
       padding: 12,
       borderBottomWidth: 1,
       borderBottomColor: '#eee',
       backgroundColor: COLORS.white,
+   },
+   header: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 12,
+      backgroundColor: COLORS.white,
+   },
+   headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: COLORS.tertiary,
    },
    searchWrapper: {
       flexDirection: 'row',

@@ -17,19 +17,21 @@ function ShowImageModal({
    onSetAsPrimary,
    photoId,
    cloudinaryId,
+   isPrimary,
 }: {
    visible: boolean
    imageUrl: string
    onClose: () => void
-   onDelete: (photoId: string, cloudinaryId: string) => void
+   onDelete: (photoId: string, isPrimary: boolean) => void
    onSetAsPrimary: (photoId: string) => void
    photoId: string
    cloudinaryId: string
+   isPrimary: boolean
 }) {
    const screenWidth = Dimensions.get('window').width
    const screenHeight = Dimensions.get('window').height
 
-   const handleDelete = () => {
+   const handleDelete = (isPrimary: boolean) => {
       Alert.alert('Delete Photo', 'Are you sure you want to delete this photo?', [
          {
             text: 'Cancel',
@@ -39,7 +41,7 @@ function ShowImageModal({
             text: 'Delete',
             onPress: () => {
                onClose()
-               onDelete(photoId, cloudinaryId)
+               onDelete(photoId, isPrimary)
             },
             style: 'destructive',
          },
@@ -80,7 +82,7 @@ function ShowImageModal({
                   Alert.alert('Photo Options', 'Choose an action', [
                      {
                         text: 'Delete Photo',
-                        onPress: handleDelete,
+                        onPress: () => handleDelete(isPrimary),
                         style: 'destructive',
                      },
                      {

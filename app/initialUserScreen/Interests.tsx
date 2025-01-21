@@ -106,9 +106,6 @@ function Interests({ navigation }: { navigation: any }) {
          <TouchableOpacity style={[styles.continueButton]} onPress={handleContinue}>
             <Text style={styles.continueButtonText}>Continue</Text>
          </TouchableOpacity>
-         <TouchableOpacity onPress={() => navigation.navigate('Pictures')}>
-            <Text>Skip</Text>
-         </TouchableOpacity>
       </SafeAreaView>
    )
 }
@@ -116,7 +113,7 @@ function Interests({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: COLORS.backgroundContent,
+      backgroundColor: COLORS.white,
       padding: 20,
    },
    backButton: {
@@ -126,7 +123,7 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: COLORS.backgroundButton,
+      backgroundColor: COLORS.primary,
    },
    header: {
       marginTop: 0,
@@ -193,7 +190,7 @@ const styles = StyleSheet.create({
       fontWeight: '600',
    },
    continueButton: {
-      backgroundColor: COLORS.backgroundButton,
+      backgroundColor: COLORS.primary,
       padding: 16,
       borderRadius: 12,
       alignItems: 'center',

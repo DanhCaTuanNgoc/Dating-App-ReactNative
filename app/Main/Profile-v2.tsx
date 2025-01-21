@@ -110,7 +110,7 @@ function ProfileV2({ navigation }: { navigation: any }) {
          <View style={styles.notificationContainer}>
             <View style={styles.warningBox}>
                <Text style={styles.warningText}>Bạn chưa xác thực !</Text>
-               <TouchableOpacity style={styles.verifyButton}>
+               <TouchableOpacity style={styles.verifyButton} onPress={() => navigation.navigate('Authenticate')}>
                   <Text style={styles.verifyButtonText}>Xác thực ngay</Text>
                </TouchableOpacity>
             </View>

@@ -164,11 +164,14 @@ router.post('/update-location', async (req, res) => {
    const { userId, location } = req.body
    try {
       const { latitude, longitude } = location.coords
+      if (!latitude || !longitude) {
+         return res.status(400).json({ error: 'Latitude and longitude are required' })
+      }
       const query = `
          UPDATE users 
          SET location = ST_SetSRID(ST_MakePoint($1, $2), 4326)
          WHERE id = $3
-         RETURNING ST_AsText(location) as location, 
+         RETURNING ST_AsText(location) as location
       `
       const result = await pool.query(query, [longitude, latitude, userId])
       res.json({

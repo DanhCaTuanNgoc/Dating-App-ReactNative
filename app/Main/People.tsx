@@ -7,6 +7,7 @@ import {
    ActivityIndicator,
    Platform,
    Alert,
+   StatusBar,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SIZES } from '../../constants/theme'
@@ -33,6 +34,7 @@ import { chatService } from '@/backend/services/chatService'
 import { API_BASE_URL } from '../../store/IPv4'
 import { addMatch } from '@/store/matching/matchReducer'
 
+import AlertModal from '@/components/AlertModal'
 
 function People({ navigation }: { navigation: any }) {
    const { errorMsg, newLocation, requestLocationPermission } = useLocation()
@@ -44,6 +46,7 @@ function People({ navigation }: { navigation: any }) {
    const [isLoading, setIsLoading] = useState(true)
    const [matchedUser, setMatchedUser] = useState<any>(null)
    const [showMatchCelebration, setShowMatchCelebration] = useState(false)
+   const [showStarService, setShowStarService] = useState(false)
    const dispatch = useDispatch()
 
    // Tải danh sách đối tượng hẹn hò
@@ -137,13 +140,36 @@ function People({ navigation }: { navigation: any }) {
    }
 
    // Xử lý khi người dùng swipe left
-   const handleSwipedLeft = (cardIndex: number) => {
+   const handleSwipedLeft = async (cardIndex: number) => {
       try {
-         const swipedUser = matchingList[cardIndex]
-         console.log('Disliked user:', swipedUser.id) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         const targetUser = matchingList[cardIndex]
          setNumber(number - 1)
+
+         const response = await fetch(`${API_BASE_URL}/userMatch/action`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+               userId,
+               targetUserId: targetUser.id,
+               action: 'dislike',
+            }),
+         })
+
+         if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+         }
+
+         const data = await response.json()
+
+         if (!data.success) {
+            console.error('Dislike action failed:', data.error)
+            Alert.alert('Error', data.error || 'Failed to process dislike action')
+         }
       } catch (error) {
          console.error('Error disliking user:', error)
+         Alert.alert('Error', 'Failed to process dislike action. Please try again.')
       }
    }
 
@@ -184,7 +210,12 @@ function People({ navigation }: { navigation: any }) {
             >
                <Ionicons name="close" size={24} color={COLORS.white} />
             </TouchableOpacity>
-            <TouchableOpacity style={{ ...styles.actionButton, ...styles.starButton }}>
+            <TouchableOpacity
+               style={{ ...styles.actionButton, ...styles.starButton }}
+               onPress={() => {
+                  setShowStarService(true)
+               }}
+            >
                <Ionicons name="star" size={24} color={COLORS.white} />
             </TouchableOpacity>
             <TouchableOpacity
@@ -282,7 +313,15 @@ function People({ navigation }: { navigation: any }) {
                setShowMatchCelebration(false)
             }}
          />
-         
+
+         <AlertModal
+            visible={showStarService}
+            onClose={() => setShowStarService(false)}
+            title="Special Service"
+            message="You are not a premium user, please upgrade to use this feature"
+            iconName="star"
+            color={COLORS.lightYellow}
+         />
       </SafeAreaView>
    )
 }
