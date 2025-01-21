@@ -6,6 +6,7 @@ import {
    Alert,
    Text,
    ScrollView,
+   Platform,
 } from 'react-native'
 import { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker'
@@ -146,90 +147,98 @@ function ManagePhotos({ navigation }: any) {
    }
 
    return (
-      <LinearGradient
-         colors={[COLORS.primary + '10', COLORS.white]}
-         style={styles.content}
-      >
-         <View style={styles.header}>
-            <TouchableOpacity
-               style={styles.backButton}
-               onPress={() => navigation.goBack()}
-            >
-               <Ionicons name="arrow-back" size={26} color={COLORS.white} />
-            </TouchableOpacity>
-            <Text style={styles.title}>Your Photos</Text>
-            <Text style={styles.subtitle}>
-               Add up to 6 photos to show your best self. Tap a photo to view or edit.
-            </Text>
-         </View>
-
-         <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-         >
-            <View style={styles.statsContainer}>
-               <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>{userPhotos.length}/6</Text>
-                  <Text style={styles.statLabel}>Photos Added</Text>
-               </View>
-               <View style={styles.statDivider} />
-               <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>
-                     {userPhotos.find((p: any) => p.is_primary) ? 'Yes' : 'No'}
-                  </Text>
-                  <Text style={styles.statLabel}>Primary Set</Text>
-               </View>
-            </View>
-
-            <View style={styles.imageGrid}>{renderImageSlots()}</View>
-
-            <View style={styles.tipsContainer}>
-               <View style={styles.tipHeader}>
-                  <Ionicons name="bulb" size={24} color={COLORS.primary} />
-                  <Text style={styles.tipsTitle}>Photo Tips</Text>
-               </View>
-               <View style={styles.tipsList}>
-                  <View style={styles.tipItem}>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={16}
-                        color={COLORS.alertSuccess}
-                     />
-                     <Text style={styles.tipText}>Clear face photo as primary</Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={16}
-                        color={COLORS.alertSuccess}
-                     />
-                     <Text style={styles.tipText}>Mix of close-up and full body</Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                     <Ionicons
-                        name="checkmark-circle"
-                        size={16}
-                        color={COLORS.alertSuccess}
-                     />
-                     <Text style={styles.tipText}>Show your interests & personality</Text>
-                  </View>
-               </View>
-            </View>
-         </ScrollView>
-
-         <ShowImageModal
-            visible={isImageViewVisible}
-            imageUrl={selectedPhoto?.photo_url || ''}
-            photoId={selectedPhoto?.id || ''}
-            onClose={() => {
-               setIsImageViewVisible(false)
-               setSelectedPhoto(null)
-            }}
-            onDelete={handleDeletePhoto}
-            onSetAsPrimary={handleSetPrimary}
-            cloudinaryId={selectedPhoto?.cloudinary_id || ''}
+      <View style={styles.container}>
+         <LinearGradient
+            colors={[
+               COLORS.white,
+               Platform.OS === 'ios' ? `${COLORS.primary}10` : `${COLORS.primary}40`,
+            ]}
+            style={StyleSheet.absoluteFillObject}
          />
-      </LinearGradient>
+         <View style={styles.content}>
+            <View style={styles.header}>
+               <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => navigation.goBack()}
+               >
+                  <Ionicons name="arrow-back" size={26} color={COLORS.white} />
+               </TouchableOpacity>
+               <Text style={styles.title}>Your Photos</Text>
+               <Text style={styles.subtitle}>
+                  Add up to 6 photos to show your best self. Tap a photo to view or edit.
+               </Text>
+            </View>
+
+            <ScrollView
+               showsVerticalScrollIndicator={false}
+               contentContainerStyle={styles.scrollContent}
+            >
+               <View style={styles.statsContainer}>
+                  <View style={styles.statItem}>
+                     <Text style={styles.statNumber}>{userPhotos.length}/6</Text>
+                     <Text style={styles.statLabel}>Photos Added</Text>
+                  </View>
+                  <View style={styles.statDivider} />
+                  <View style={styles.statItem}>
+                     <Text style={styles.statNumber}>
+                        {userPhotos.find((p: any) => p.is_primary) ? 'Yes' : 'No'}
+                     </Text>
+                     <Text style={styles.statLabel}>Primary Set</Text>
+                  </View>
+               </View>
+
+               <View style={styles.imageGrid}>{renderImageSlots()}</View>
+
+               <View style={styles.tipsContainer}>
+                  <View style={styles.tipHeader}>
+                     <Ionicons name="bulb" size={24} color={COLORS.primary} />
+                     <Text style={styles.tipsTitle}>Photo Tips</Text>
+                  </View>
+                  <View style={styles.tipsList}>
+                     <View style={styles.tipItem}>
+                        <Ionicons
+                           name="checkmark-circle"
+                           size={16}
+                           color={COLORS.alertSuccess}
+                        />
+                        <Text style={styles.tipText}>Clear face photo as primary</Text>
+                     </View>
+                     <View style={styles.tipItem}>
+                        <Ionicons
+                           name="checkmark-circle"
+                           size={16}
+                           color={COLORS.alertSuccess}
+                        />
+                        <Text style={styles.tipText}>Mix of close-up and full body</Text>
+                     </View>
+                     <View style={styles.tipItem}>
+                        <Ionicons
+                           name="checkmark-circle"
+                           size={16}
+                           color={COLORS.alertSuccess}
+                        />
+                        <Text style={styles.tipText}>
+                           Show your interests & personality
+                        </Text>
+                     </View>
+                  </View>
+               </View>
+            </ScrollView>
+
+            <ShowImageModal
+               visible={isImageViewVisible}
+               imageUrl={selectedPhoto?.photo_url || ''}
+               photoId={selectedPhoto?.id || ''}
+               onClose={() => {
+                  setIsImageViewVisible(false)
+                  setSelectedPhoto(null)
+               }}
+               onDelete={handleDeletePhoto}
+               onSetAsPrimary={handleSetPrimary}
+               cloudinaryId={selectedPhoto?.cloudinary_id || ''}
+            />
+         </View>
+      </View>
    )
 }
 
@@ -241,6 +250,7 @@ const styles = StyleSheet.create({
    content: {
       flex: 1,
       paddingTop: 30,
+      zIndex: 1,
    },
    header: {
       padding: 20,

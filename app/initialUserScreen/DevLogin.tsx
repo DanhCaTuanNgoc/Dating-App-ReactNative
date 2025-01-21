@@ -148,7 +148,10 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#ddd',
       borderRadius: 12,
-      padding: 12,
+      padding: Platform.select({
+         ios: 16,
+         android: 8,
+      }),
       backgroundColor: '#f8f8f8',
    },
    countrySelect: {

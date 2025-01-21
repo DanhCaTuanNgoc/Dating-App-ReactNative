@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import {
    View,
    Text,
@@ -10,16 +10,19 @@ import {
    ScrollView,
    PanResponder,
    TouchableWithoutFeedback,
+   Platform,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SIZES } from '../constants/theme'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
-const { height } = Dimensions.get('window')
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { getEducationAndRelationship } from '../store/user/userAction'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getUserFilters } from '../store/matching/matchAction'
+import { debounce } from 'lodash'
+
+const { height } = Dimensions.get('window')
 
 interface FilterModalProps {
    visible: boolean
@@ -140,6 +143,42 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
       onClose()
    }
 
+   // Thêm useMemo để tối ưu các options
+   const sliderOptions = useMemo(
+      () => ({
+         touchDimensions: {
+            height: 30,
+            width: 30,
+            borderRadius: 15,
+            slipDisplacement: 30,
+         },
+         markerStyle: styles.sliderMarker,
+         selectedStyle: styles.selectedSlider,
+         containerStyle: styles.sliderContainer,
+         enabledOne: true,
+         enabledTwo: true,
+         snapped: true,
+         allowOverlap: false,
+         minMarkerOverlapDistance: 10,
+      }),
+      [],
+   )
+
+   // Tối ưu hóa callback với debounce
+   const debouncedAgeChange = useCallback(
+      debounce((values: number[]) => {
+         setAge(values)
+      }, 10),
+      [],
+   )
+
+   const debouncedDistanceChange = useCallback(
+      debounce((values: number[]) => {
+         setDistance(values[0])
+      }, 10),
+      [],
+   )
+
    return (
       <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
          <View style={styles.overlay}>
@@ -168,7 +207,7 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                      showsVerticalScrollIndicator={false}
                      contentContainerStyle={styles.scrollContent}
                      bounces={false}
-                     overScrollMode="never" // Đảm bảo sự kiện chạm không bị chặn
+                     overScrollMode="never"
                   >
                      {/* Age Range */}
                      <View style={styles.section}>
@@ -189,10 +228,8 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                            max={100}
                            step={1}
                            sliderLength={280}
-                           onValuesChange={setAge}
-                           selectedStyle={styles.selectedSlider}
-                           markerStyle={styles.sliderMarker}
-                           containerStyle={styles.sliderContainer}
+                           onValuesChange={debouncedAgeChange}
+                           {...sliderOptions}
                         />
                      </View>
 
@@ -215,10 +252,8 @@ const FilterModal = ({ visible, onClose, onApply }: FilterModalProps) => {
                            max={100}
                            step={1}
                            sliderLength={280}
-                           onValuesChange={([value]) => setDistance(value)}
-                           selectedStyle={styles.selectedSlider}
-                           markerStyle={styles.sliderMarker}
-                           containerStyle={styles.sliderContainer}
+                           onValuesChange={debouncedDistanceChange}
+                           {...sliderOptions}
                         />
                      </View>
 
@@ -516,7 +551,7 @@ const styles = StyleSheet.create({
    },
    genderButtonText: {
       color: COLORS.textColor,
-      fontSize: SIZES.medium,
+      fontSize: Platform.OS === 'ios' ? 16 : 14,
       fontWeight: '500',
    },
    selectedGenderText: {

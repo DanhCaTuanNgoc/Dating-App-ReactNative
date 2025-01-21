@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import { COLORS, SIZES } from '../../constants/theme'
 import { Ionicons } from '@expo/vector-icons'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getEducationAndRelationship, updateUserInfo } from '../../store/user/userAction'
 import DateTimePicker from '@react-native-community/datetimepicker'
@@ -24,7 +24,6 @@ function EditProfile({ navigation }: { navigation: any }) {
       userId,
    } = useSelector((state: any) => state.userState)
 
-   console.log(userInfo)
 
    const [name, setName] = useState(userInfo?.name)
    const [bio, setBio] = useState(userInfo?.bio)
@@ -58,6 +57,10 @@ function EditProfile({ navigation }: { navigation: any }) {
    }
 
    const handleDateChange = (event: any, selectedDate?: Date) => {
+      if (Platform.OS === 'android') {
+         setShowDatePicker(false)
+      }
+
       if (selectedDate) {
          setBirthDate(selectedDate)
       }
@@ -91,13 +94,6 @@ function EditProfile({ navigation }: { navigation: any }) {
          Alert.alert('Success', 'User info updated successfully')
       } catch (error) {
          console.error('Error saving user info:', error)
-      }
-   }
-
-   const onDateChange = (event: any, selectedDate?: Date) => {
-      setShowDatePicker(false)
-      if (selectedDate) {
-         setBirthDate(selectedDate)
       }
    }
 
@@ -151,23 +147,60 @@ function EditProfile({ navigation }: { navigation: any }) {
                   placeholderTextColor={'#999'}
                />
             </View>
-            <Text style={styles.label}>Birth date</Text>
-            <View style={styles.dateInputContainer}>
-               <TextInput
-                  style={styles.dateInput}
-                  value={formatDate(birthDate)}
-                  placeholder="Select your birth date"
-                  placeholderTextColor={'#999'}
-                  editable={false}
-               />
-               <DateTimePicker
-                  style={styles.calendarButton}
-                  value={birthDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
-                  maximumDate={new Date()}
-               />
+            <View style={styles.inputContainer}>
+               <Text style={styles.label}>Birth date</Text>
+               <View style={styles.dateInputContainer}>
+                  {Platform.OS === 'ios' ? (
+                     <>
+                        <TextInput
+                           style={styles.dateInput}
+                           value={formatDate(birthDate)}
+                           editable={false}
+                           placeholder="DD/MM/YYYY"
+                           placeholderTextColor="#999"
+                        />
+                        <DateTimePicker
+                           value={birthDate}
+                           mode="date"
+                           display="default"
+                           onChange={handleDateChange}
+                           maximumDate={new Date()}
+                           style={styles.iosDatePicker}
+                           themeVariant="light"
+                        />
+                     </>
+                  ) : (
+                     <>
+                        <TextInput
+                           style={styles.dateInput}
+                           value={formatDate(birthDate)}
+                           editable={false}
+                           placeholder="DD/MM/YYYY"
+                           placeholderTextColor="#999"
+                        />
+                        <TouchableOpacity
+                           style={styles.dateButton}
+                           onPress={() => setShowDatePicker(true)}
+                        >
+                           <Ionicons
+                              name="calendar-outline"
+                              size={24}
+                              color={COLORS.tertiary}
+                           />
+                        </TouchableOpacity>
+
+                        {showDatePicker && (
+                           <DateTimePicker
+                              value={birthDate}
+                              mode="date"
+                              display="default"
+                              onChange={handleDateChange}
+                              maximumDate={new Date()}
+                           />
+                        )}
+                     </>
+                  )}
+               </View>
             </View>
 
             <View style={styles.inputContainer}>
@@ -331,6 +364,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 20,
+      position: 'relative',
    },
    dateInput: {
       flex: 1,
@@ -340,12 +374,27 @@ const styles = StyleSheet.create({
       borderRadius: 12,
       paddingHorizontal: 15,
       fontSize: 16,
+      position: 'relative',
       backgroundColor: COLORS.white,
    },
-   calendarButton: {
+   dateText: {
+      color: COLORS.black,
+      fontSize: 16,
+   },
+   placeholderText: {
+      color: '#999',
+   },
+   dateButton: {
+      padding: 10,
       position: 'absolute',
-      right: 12,
-      paddingHorizontal: 8,
+      right: 10,
+   },
+   iosDatePicker: {
+      position: 'absolute',
+      right: 10,
+      width: '100%',
+      height: 120,
+      marginTop: 10,
    },
 })
 
