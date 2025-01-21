@@ -91,22 +91,6 @@ npm run ios
 # For Android
 npm run android
 ```
-## Project Structure
-
-linder/
-├── app/                   # React Native app files
-│   ├── Main/              # Main screens
-│   ├── initialUserScreen/ # Initial setup screens
-├── assets/                # Static assets
-├── backend/               # Backend server
-│   ├── config/            # Configuration files
-│   ├── routes/            # API routes
-│   └── services/          # Business logic
-├── components/            # Shared components
-├── constants/             # App constants
-├── hooks/                 # Custom hooks
-├── store/                 # Redux store
-├── App.js
 
 ## API Documentation
 
