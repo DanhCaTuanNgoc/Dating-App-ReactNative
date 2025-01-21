@@ -1,50 +1,137 @@
-# Welcome to your Expo app 👋
+# Linder - Dating App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern dating application built with React Native, inspired by Tinder. Match, chat and connect with people nearby based on your preferences.
 
-## Get started
+## Features
 
-1. Install dependencies
+-  👥 Smart matching system based on location, interests and preferences
+-  💬 Real-time chat with matches
+-  📍 Location-based matching
+-  📸 Multiple photos upload and management
+-  🔍 Advanced filtering system
+-  📱 Cross-platform (iOS & Android)
+-  🔐 Authentication with email and phone number
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+### Frontend
 
-   ```bash
-    npx expo start
-   ```
+-  React Native / Expo
+-  Redux for state management
+-  React Navigation
+-  Expo Location
+-  React Native Gesture Handler
 
-In the output, you'll find options to open the app in a
+### Backend
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+-  Node.js / Express
+-  PostgreSQL with PostGIS
+-  Firebase (Authentication & Real-time chat)
+-  Cloudinary (Image management)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Getting Started
 
-## Get a fresh project
+### Prerequisites
 
-When you're ready, run:
+-  Node.js 14+
+-  PostgreSQL with PostGIS extension
+-  Firebase account
+-  Cloudinary account
+
+### Installation
+
+1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/yourusername/linder.git
+cd linder
+````
+
+2. Install dependencies
+
+```bash
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+3. Set up environment variables
+   Create a .env file in the root directory and add:
 
-## Learn more
+```env
+# Database Configuration
+DB_USER=your_db_user
+DB_HOST=localhost
+DB_NAME=your_db_name
+DB_PASSWORD=your_password
+DB_PORT=5432
 
-To learn more about developing your project with Expo, look at the following resources:
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# Firebase Configuration
+FIREBASE_API_KEY=your_api_key
+FIREBASE_AUTH_DOMAIN=your_auth_domain
+FIREBASE_PROJECT_ID=your_project_id
+...
+```
 
-## Join the community
+4. Start the development server
 
-Join our community of developers creating universal apps.
+```bash
+npm start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+5. Run the app
+
+```bash
+# For iOS
+npm run ios
+
+# For Android
+npm run android
+```
+## Project Structure
+
+linder/
+├── app/                   # React Native app files
+│   ├── Main/              # Main screens
+│   ├── initialUserScreen/ # Initial setup screens
+├── assets/                # Static assets
+├── backend/               # Backend server
+│   ├── config/            # Configuration files
+│   ├── routes/            # API routes
+│   └── services/          # Business logic
+├── components/            # Shared components
+├── constants/             # App constants
+├── hooks/                 # Custom hooks
+├── store/                 # Redux store
+├── App.js
+
+## API Documentation
+
+The API documentation is available at `/api-docs` when running the development server.
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
+Project Link: [https://github.com/yourusername/linder](https://github.com/yourusername/linder)
+
+## Acknowledgments
+
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev/)
+- [Firebase](https://firebase.google.com/)
+- [Cloudinary](https://cloudinary.com/)

@@ -11,6 +11,9 @@ npm-debug.*
 web-build/
 .env
 .prettierrc
+backend/config/firebase-config.js
+backend/config/cloudinary.js
+backend/config/database.js
 
 # macOS
 .DS_Store

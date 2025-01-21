@@ -1,11 +1,11 @@
-require('dotenv').config()
-
 export default firebaseConfig = {
-   apiKey: process.env.FIREBASE_API_KEY,
-   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-   projectId: process.env.FIREBASE_PROJECT_ID,
-   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-   appId: process.env.FIREBASE_APP_ID,
-   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+   apiKey: 'AIzaSyDJN_KlxKnWmgxmxL7rlQS9zxlcFA8mBuM',
+   authDomain: 'linder-7e0c0.firebaseapp.com',
+   projectId: 'linder-7e0c0',
+   storageBucket: 'linder-7e0c0.firebasestorage.app',
+   messagingSenderId: '585133497253',
+   appId: '1:585133497253:web:f1f1a308f85ce1ec2c664c',
+   measurementId: 'G-7KEBN5X345',
 }
+
+
