@@ -79,7 +79,7 @@ function App() {
                >
                   <Stack.Screen name="Login" component={Login} />
                   <Stack.Screen name="Register" component={Register} />
-                  <Stack.Screen name="PhoneLogin" component={DevLogin} />
+                  <Stack.Screen name="PhoneLogin" component={PhoneLogin} />
                   <Stack.Screen name="VerifyPhoneNumber" component={VerifyPhoneNumber} />
                   <Stack.Screen name="Infomation" component={Infomation} />
                   <Stack.Screen name="Interests" component={Interests} />
