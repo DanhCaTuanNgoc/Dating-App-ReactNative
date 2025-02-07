@@ -14,11 +14,11 @@ WebBrowser.maybeCompleteAuthSession()
 export default function Login({ navigation }: any) {
    const [request, response, promptAsync] = Google.useAuthRequest({
       webClientId:
-         '70301397536-34cl9jufnru6flrpvp7qbet92k5rrhrv.apps.googleusercontent.com',
+         '...',
       iosClientId:
-         '70301397536-tnhlab6r6uodkullco8pdptl7l83epl6.apps.googleusercontent.com',
+         '...',
       androidClientId:
-         '70301397536-4k5g5k5g5k5g5k5g5k5g5k5g5k5g5k5g5.apps.googleusercontent.com', // Ensure this is correct for Android
+         '...', 
    })
 
    const dispatch: any = useDispatch()
