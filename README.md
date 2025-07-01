@@ -104,14 +104,10 @@ The API documentation is available at `/api-docs` when running the development s
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-Project Link: [https://github.com/yourusername/linder](https://github.com/yourusername/linder)
+Nguyễn Ngọc Tuấn - [ngoctuan090904@gmail.com]
 
 ## Acknowledgments
 
