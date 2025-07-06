@@ -105,9 +105,13 @@ npm run ios
 npm run android
 ```
 
-## API Documentation
+## 📱 Expo Go Compatibility
 
-The API documentation is available at `/api-docs` when running the development server.
+**⚠️ Important: This app is specifically designed for Expo Go version 52**
+
+### Why Expo Go 52?
+
+This app uses specific features and dependencies that are only compatible with Expo Go SDK 52. Using other versions may cause compatibility issues.
 
 ## Contributing
 
