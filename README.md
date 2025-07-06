@@ -12,6 +12,19 @@ A modern dating application built with React Native, inspired by Tinder. Match, 
 -  📱 Cross-platform (iOS & Android)
 -  🔐 Authentication with email and phone number
 
+ ## Screenshots
+
+<div align="center">
+  <img src="assets/images/demo1.jpg" width="200" alt="Login Screen" />
+  <img src="assets/images/demo2.jpg" width="200" alt="Profile Setup" />
+  <img src="assets/images/demo3.jpg" width="200" alt="Matching Interface" />
+  <br>
+  <img src="assets/images/demo4.jpg" width="200" alt="Chat Interface" />
+  <img src="assets/images/demo5.jpg" width="200" alt="User Profile" />
+  <img src="assets/images/demo6.jpg" width="200" alt="Settings & Filters" />
+</div>
+
+
 ## Tech Stack
 
 ### Frontend
